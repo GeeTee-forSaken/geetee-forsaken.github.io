@@ -1,3 +1,259 @@
-<html>
-    <p>Test</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Layout Template</title>
+    <style>
+
+        @font-face {
+            font-family: 'minecraft-ten';
+            src: url('resources/font/minecraft-ten/MinecraftTen.woff') format('woff'),
+                url('resources/font/minecraft-ten/MinecraftTen.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        /* CSS Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'minecraft-ten', system-ui, -apple-system, sans-serif;
+        }
+
+
+        body {
+            line-height: 1.6;
+            color: #333;
+        }
+
+        /* --- A1: Navigation Bar --- */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: #fff;
+            border-bottom: 1px solid #eee;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-group {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .navbar button {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ccc;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .navbar h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        /* --- A2: Hero Image Section --- */
+        .hero {
+            height: 60vh;
+            min-height: 400px;
+            background-color: #cccccc; /* Image placeholder color */
+            /* Add background-image: url('...'); here later */
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            color: #222;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+        }
+
+        /* --- B1, B2, B3: Content Sections --- */
+        .content-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 4rem 10%;
+            gap: 4rem;
+        }
+
+        .bg-white { background-color: #ffffff; }
+        .bg-gray { background-color: #f4f4f4; }
+
+        .row-reverse {
+            flex-direction: row-reverse;
+        }
+
+        .image-placeholder img {
+            flex: 1;
+            height: 400px;
+            width: 480px;
+            background-color: #ddd;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #666;
+            border-radius: 8px;
+        }
+
+        .text-content {
+            flex: 1;
+        }
+
+        .text-content h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        /* --- C1: Auto-Scrolling Carousel --- */
+        .carousel-wrapper {
+            background-color: #333;
+            color: white;
+            padding: 3rem 0;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .carousel-track {
+            display: flex;
+            gap: 2rem;
+            width: max-content;
+            /* Animation for looping scroll */
+            animation: scroll 15s linear infinite;
+        }
+
+        .carousel-track:hover {
+            animation-play-state: paused; /* Pause on hover */
+        }
+
+        .frame {
+            width: 300px;
+            height: 200px;
+            background-color: #555;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            border-radius: 8px;
+        }
+
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            /* Translate by exactly half the track width (the 5 unique items) */
+            100% { transform: translateX(calc(-50% - 1rem)); } 
+        }
+
+        /* --- D1: Footer --- */
+        .footer {
+            background-color: #111;
+            color: #888;
+            text-align: center;
+            padding: 2rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Design for smaller screens */
+        @media (max-width: 768px) {
+            .content-section, .row-reverse {
+                flex-direction: column;
+                text-align: center;
+                gap: 2rem;
+                padding: 3rem 5%;
+            }
+            .image-placeholder {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- A1: Navigation bar -->
+    <nav class="navbar">
+        <div class="nav-group">
+            <button>Community</button>
+            <button>Button 2</button>
+        </div>
+        <h2>Dynawiki</h2>
+        <div class="nav-group">
+            <button>Button 3</button>
+            <button>Button 4</button>
+        </div>
+    </nav>
+
+    <!-- A2: Image background placeholder -->
+    <header class="hero">
+        <h1>DYNAWIKI</h1>
+        <p>A fan made MCCI website related to Dynaball</p>
+    </header>
+
+    <!-- B1: White background, Image Left / Text Right -->
+    <section class="content-section bg-white">
+        <div class="image-placeholder"><img src="resources/image/section1.png"></div>
+        <div class="text-content">
+            <h3>Passion of Dynaball</h3>
+            <p>Dynaball, a PvP party game played by two teams of eight (roughly) go head to head with mainly unique method; Shooting a handful of TNT with a slingshot. The objective of this game is simple; survive till the end!</p>
+        </div>
+    </section>
+
+    <!-- B2: Gray background, Image Right / Text Left -->
+    <section class="content-section bg-gray row-reverse">
+        <div class="image-placeholder"></div>
+        <div class="text-content">
+            <h3>Section B2</h3>
+            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.</p>
+        </div>
+    </section>
+
+    <!-- B3: White background, Image Left / Text Right -->
+    <section class="content-section bg-white">
+        <div class="image-placeholder">Image Placeholder</div>
+        <div class="text-content">
+            <h3>Section B3</h3>
+            <p>Sunt in culpa qui officia deserunt mollit anim id est laborum. Curabitur pretium tincidunt lacus. Nulla gravida orci a odio.</p>
+        </div>
+    </section>
+
+    <!-- C1: Auto-scrolling horizontal frames -->
+    <section class="carousel-wrapper">
+        <div class="carousel-track">
+            <!-- First set of 5 frames -->
+            <div class="frame">Frame 1 Text</div>
+            <div class="frame">Frame 2 Text</div>
+            <div class="frame">Frame 3 Text</div>
+            <div class="frame">Frame 4 Text</div>
+            <div class="frame">Frame 5 Text</div>
+            <!-- Duplicated set of 5 frames to create a seamless infinite scroll effect -->
+            <div class="frame">Frame 1 Text</div>
+            <div class="frame">Frame 2 Text</div>
+            <div class="frame">Frame 3 Text</div>
+            <div class="frame">Frame 4 Text</div>
+            <div class="frame">Frame 5 Text</div>
+        </div>
+    </section>
+
+    <!-- D1: Footer -->
+    <footer class="footer">
+        <p>Small text footer section. &copy; 2026 Your Company Name. All rights reserved.</p>
+    </footer>
+
+</body>
 </html>
