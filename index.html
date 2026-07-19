@@ -151,8 +151,11 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.2rem;
+            font-size: 1rem; /* Reduced from 1.2rem to fit longer text */
             border-radius: 8px;
+            white-space: normal; /* This forces the text to wrap onto new lines! */
+            padding: 1.5rem; /* Adds breathing room inside the box */
+            text-align: center; /* Centers the text inside the frame */
         }
 
         @keyframes scroll {
@@ -190,12 +193,12 @@
     <nav class="navbar">
         <div class="nav-group">
             <button>Community</button>
-            <button>Button 2</button>
+            <button>Statistics</button>
         </div>
         <h2>Dynawiki</h2>
         <div class="nav-group">
-            <button>Button 3</button>
-            <button>Button 4</button>
+            <button>How-to-wiki</button>
+            <button></button>
         </div>
     </nav>
 
@@ -206,53 +209,60 @@
     </header>
 
     <!-- B1: White background, Image Left / Text Right -->
-    <section class="content-section bg-white">
+    <section class="content-section" style="background-color: rgb(145, 5, 47)">
         <div class="image-placeholder"><img src="resources/image/section1.png"></div>
-        <div class="text-content">
+        <div class="text-content" style="color: #fff;">
             <h3>Passion of Dynaball</h3>
             <p>Dynaball, a PvP party game played by two teams of eight (roughly) go head to head with mainly unique method; Shooting a handful of TNT with a slingshot. The objective of this game is simple; survive till the end!</p>
         </div>
     </section>
 
     <!-- B2: Gray background, Image Right / Text Left -->
-    <section class="content-section bg-gray row-reverse">
-        <div class="image-placeholder"></div>
-        <div class="text-content">
-            <h3>Section B2</h3>
-            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.</p>
+    <section class="content-section row-reverse" style="background-color: rgb(197, 128, 0);">
+        <div class="image-placeholder"><img src="resources/image/section2.png"></div>
+        <div class="text-content" style="color: #fff;">
+            <h3>A Friendly Community</h3>
+            <p>Dynaball is not only about competitive game. It is about something subtle you can find among those players; generosity and caring. Since Dynaball is known to be less 'competitive' and blood thirst, Dynaball is just silly shooting explosives for fun!</p>
         </div>
     </section>
 
     <!-- B3: White background, Image Left / Text Right -->
-    <section class="content-section bg-white">
-        <div class="image-placeholder">Image Placeholder</div>
-        <div class="text-content">
-            <h3>Section B3</h3>
-            <p>Sunt in culpa qui officia deserunt mollit anim id est laborum. Curabitur pretium tincidunt lacus. Nulla gravida orci a odio.</p>
+    <section class="content-section" style="background-color: rgb(12, 85, 85)">
+        <div class="image-placeholder"><img src="resources/image/section3.png"></div>
+        <div class="text-content" style="color: #fff;">
+            <h3>Beneficial of the game</h3>
+            <p>Dynaball requires variour of skills to conquer the game. Aside of shooting TNTs, unique gadgets are present to be used strategically in every situations. Blocks dropped by explosions to restructure your map and play defend, and many more!</p>
         </div>
     </section>
 
     <!-- C1: Auto-scrolling horizontal frames -->
     <section class="carousel-wrapper">
+        <h2 style="text-align: center; margin-bottom: 2rem; padding: 0 1rem;">Community Testimonies</h2>
         <div class="carousel-track">
             <!-- First set of 5 frames -->
-            <div class="frame">Frame 1 Text</div>
-            <div class="frame">Frame 2 Text</div>
-            <div class="frame">Frame 3 Text</div>
-            <div class="frame">Frame 4 Text</div>
-            <div class="frame">Frame 5 Text</div>
+            <div class="frame">Dynaball allowed me to meet lots of really cool people online and build up my social confidence which has helped me so much in so many different areas of life -Hw</div>
+            <div class="frame">probably would get so much more done if i didn't play dynaball -b</div>
+            <div class="frame">Dynaball is the perfect Minecraft mini game. You can have fun as a beginner alongside veterans. -aWD</div>
+            <div class="frame">dynaball is the only game where you have a friendly chat with your enemies -ht</div>
+            <div class="frame">dynaball is great bc it's fun to explode ur friends -f</div>
             <!-- Duplicated set of 5 frames to create a seamless infinite scroll effect -->
-            <div class="frame">Frame 1 Text</div>
-            <div class="frame">Frame 2 Text</div>
-            <div class="frame">Frame 3 Text</div>
-            <div class="frame">Frame 4 Text</div>
-            <div class="frame">Frame 5 Text</div>
+            <div class="frame">Dynaball allowed me to meet lots of really cool people online and build up my social confidence which has helped me so much in so many different areas of life -Hw</div>
+            <div class="frame">probably would get so much more done if i didn't play dynaball -b</div>
+            <div class="frame">Dynaball is the perfect Minecraft mini game. You can have fun as a beginner alongside veterans. -aWD</div>
+            <div class="frame">dynaball is the only game where you have a friendly chat with your enemies -ht</div>
+            <div class="frame">dynaball is great bc it's fun to explode ur friends -f</div>
         </div>
+    </section>
+
+<!-- B3: White background, Image Left / Text Right -->
+    <section class="content-section bg-white">
+        <div class="text-content">
+            <h3>Vitit the official MCC Island website here!</h3>
     </section>
 
     <!-- D1: Footer -->
     <footer class="footer">
-        <p>Small text footer section. &copy; 2026 Your Company Name. All rights reserved.</p>
+        <p>A fanmade website for fun. &copy; 2026 by GeeTee_forSaken</p>
     </footer>
 
 </body>
