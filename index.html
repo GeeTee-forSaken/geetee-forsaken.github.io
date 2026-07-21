@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Basic Layout Template</title>
+    <title>Dynawiki</title>
     <style>
 
         @font-face {
@@ -15,14 +15,29 @@
             font-display: swap;
         }
 
+        @font-face {
+            font-family: 'minecraft-five';
+            src: url('resources/font/minecraft-five/MinecraftFive.woff') format('woff'),
+                url('resources/font/minecraft-five/MinecraftFive.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+
         /* CSS Reset & Base Styles */
-        * {
+        .minecraft-ten {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'minecraft-ten', system-ui, -apple-system, sans-serif;
         }
 
+        .minecraft-five {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'minecraft-five', system-ui, -apple-system, sans-serif;
+        }
 
         body {
             line-height: 1.6;
@@ -42,17 +57,31 @@
             z-index: 100;
         }
 
-        .nav-group {
+        /* Hamburger Menu Icon styling */
+        .hamburger-btn {
             display: flex;
-            gap: 1rem;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 45px;
+            height: 40px;
+            background: transparent;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 8px;
+            z-index: 102; /* Keeps it above the dark overlay */
         }
 
-        .navbar button {
-            padding: 0.5rem 1rem;
-            border: 1px solid #ccc;
-            background: transparent;
-            cursor: pointer;
-            border-radius: 4px;
+        .hamburger-btn span {
+            width: 100%;
+            height: 3px;
+            background-color: #333;
+            border-radius: 2px;
+            transition: all 0.3s linear;
+        }
+
+        .hamburger-btn:hover {
+            background-color: #f4f4f4;
         }
 
         .navbar h2 {
@@ -60,12 +89,75 @@
             font-weight: bold;
         }
 
+        .spacer {
+            width: 45px; /* Matches hamburger width to keep title centered */
+        }
+
+        /* --- Dropdown Menu --- */
+        .dropdown-menu {
+            position: fixed;
+            top: 70px;
+            left: 2rem;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            width: 220px;
+            display: flex;
+            flex-direction: column;
+            z-index: 101;
+            opacity: 0;
+            transform: translateY(-10px);
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-menu.active {
+            opacity: 1;
+            transform: translateY(0);
+            visibility: visible;
+        }
+
+        .dropdown-menu a {
+            padding: 1rem;
+            text-decoration: none;
+            color: #333;
+            border-bottom: 1px solid #eee;
+            font-size: 1rem;
+        }
+
+        .dropdown-menu a:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: #f4f4f4;
+        }
+
+        /* --- Blur Overlay --- */
+        .page-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6); /* Darkens background */
+            backdrop-filter: blur(6px); /* Blurs background */
+            z-index: 90;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .page-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
         /* --- A2: Hero Image Section --- */
         .hero {
             height: 60vh;
             min-height: 400px;
-            background-color: #cccccc; /* Image placeholder color */
-            /* Add background-image: url('...'); here later */
+            background-color: #cccccc;
             background-size: cover;
             background-position: center;
             display: flex;
@@ -136,12 +228,11 @@
             display: flex;
             gap: 2rem;
             width: max-content;
-            /* Animation for looping scroll */
             animation: scroll 15s linear infinite;
         }
 
         .carousel-track:hover {
-            animation-play-state: paused; /* Pause on hover */
+            animation-play-state: paused;
         }
 
         .frame {
@@ -151,16 +242,15 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1rem; /* Reduced from 1.2rem to fit longer text */
+            font-size: 1rem;
             border-radius: 8px;
-            white-space: normal; /* This forces the text to wrap onto new lines! */
-            padding: 1.5rem; /* Adds breathing room inside the box */
-            text-align: center; /* Centers the text inside the frame */
+            white-space: normal;
+            padding: 1.5rem;
+            text-align: center;
         }
 
         @keyframes scroll {
             0% { transform: translateX(0); }
-            /* Translate by exactly half the track width (the 5 unique items) */
             100% { transform: translateX(calc(-50% - 1rem)); } 
         }
 
@@ -173,7 +263,6 @@
             font-size: 0.9rem;
         }
 
-        /* Responsive Design for smaller screens */
         @media (max-width: 768px) {
             .content-section, .row-reverse {
                 flex-direction: column;
@@ -189,57 +278,65 @@
 </head>
 <body>
 
+    <!-- Overlay for blur effect -->
+    <div class="page-overlay" id="page-overlay"></div>
+
     <!-- A1: Navigation bar -->
-    <nav class="navbar">
-        <div class="nav-group">
-            <button>Community</button>
-            <button>Statistics</button>
-        </div>
+    <nav class="navbar minecraft-five">
+        <button class="hamburger-btn" id="menu-toggle" aria-label="Toggle navigation">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
         <h2>Dynawiki</h2>
-        <div class="nav-group">
-            <button>How-to-wiki</button>
-            <button></button>
-        </div>
+        <div class="spacer"></div>
     </nav>
 
+    <!-- Dropdown Menu items -->
+    <div class="dropdown-menu minecraft-five" id="dropdown-menu">
+        <a href="community.html">Community</a>
+        <a href="statistics.html">Statistics</a>
+        <a href="how-to.html">How-to-wiki</a>
+        <a href="https://mcchampionship.com/pages/mcci-dynaball/" target="_blank">MCC Island</a>
+    </div>
+
     <!-- A2: Image background placeholder -->
-    <header class="hero">
+    <header class="hero minecraft-ten">
         <h1>DYNAWIKI</h1>
         <p>A fan made MCCI website related to Dynaball</p>
     </header>
 
     <!-- B1: White background, Image Left / Text Right -->
     <section class="content-section" style="background-color: rgb(145, 5, 47)">
-        <div class="image-placeholder"><img src="resources/image/section1.png"></div>
+        <div class="image-placeholder"><img src="resources/image/section1.png" alt="Section 1"></div>
         <div class="text-content" style="color: #fff;">
-            <h3>Passion of Dynaball</h3>
-            <p>Dynaball, a PvP party game played by two teams of eight (roughly) go head to head with mainly unique method; Shooting a handful of TNT with a slingshot. The objective of this game is simple; survive till the end!</p>
+            <h3 class="minecraft-ten">Passion of Dynaball</h3>
+            <p class="minecraft-five">Dynaball, a PvP party game played by two teams of eight (roughly) go head to head with mainly unique method; Shooting a handful of TNT with a slingshot. The objective of this game is simple; survive till the end!</p>
         </div>
     </section>
 
     <!-- B2: Gray background, Image Right / Text Left -->
     <section class="content-section row-reverse" style="background-color: rgb(197, 128, 0);">
-        <div class="image-placeholder"><img src="resources/image/section2.png"></div>
+        <div class="image-placeholder"><img src="resources/image/section2.png" alt="Section 2"></div>
         <div class="text-content" style="color: #fff;">
-            <h3>A Friendly Community</h3>
-            <p>Dynaball is not only about competitive game. It is about something subtle you can find among those players; generosity and caring. Since Dynaball is known to be less 'competitive' and blood thirst, Dynaball is just silly shooting explosives for fun!</p>
+            <h3 class="minecraft-ten">A Friendly Community</h3>
+            <p class="minecraft-five">Dynaball is not only about competitive game. It is about something subtle you can find among those players; generosity and caring. Since Dynaball is known to be less 'competitive' and blood thirst, Dynaball is just silly shooting explosives for fun!</p>
         </div>
     </section>
 
     <!-- B3: White background, Image Left / Text Right -->
     <section class="content-section" style="background-color: rgb(12, 85, 85)">
-        <div class="image-placeholder"><img src="resources/image/section3.png"></div>
+        <div class="image-placeholder"><img src="resources/image/section3.png" alt="Section 3"></div>
         <div class="text-content" style="color: #fff;">
-            <h3>Beneficial of the game</h3>
-            <p>Dynaball requires variour of skills to conquer the game. Aside of shooting TNTs, unique gadgets are present to be used strategically in every situations. Blocks dropped by explosions to restructure your map and play defend, and many more!</p>
+            <h3 class="minecraft-ten">Beneficial of the game</h3>
+            <p class="minecraft-five">Dynaball requires variour of skills to conquer the game. Aside of shooting TNTs, unique gadgets are present to be used strategically in every situations. Blocks dropped by explosions to restructure your map and play defend, and many more!</p>
         </div>
     </section>
 
     <!-- C1: Auto-scrolling horizontal frames -->
-    <section class="carousel-wrapper">
-        <h2 style="text-align: center; margin-bottom: 2rem; padding: 0 1rem;">Community Testimonies</h2>
+    <section class="carousel-wrapper minecraft-five">
+        <h2 style="text-align: center; margin-bottom: 2rem; padding: 0 1rem;" class="minecraft-ten">Community Testimonies</h2>
         <div class="carousel-track">
-            <!-- First set of 5 frames -->
             <div class="frame">Dynaball allowed me to meet lots of really cool people online and build up my social confidence which has helped me so much in so many different areas of life -Hw</div>
             <div class="frame">probably would get so much more done if i didn't play dynaball -b</div>
             <div class="frame">Dynaball is the perfect Minecraft mini game. You can have fun as a beginner alongside veterans. -aWD</div>
@@ -254,16 +351,35 @@
         </div>
     </section>
 
-<!-- B3: White background, Image Left / Text Right -->
-    <section class="content-section bg-white">
+    <!-- B3: White background, Image Left / Text Right -->
+    <section class="content-section bg-white minecraft-ten">
         <div class="text-content">
-            <h3>Vitit the official MCC Island website here!</h3>
+            <h3>Visit the official MCC Island website <a href="https://mccisland.net">here!</a></h3>
+        </div>
     </section>
 
     <!-- D1: Footer -->
-    <footer class="footer">
+    <footer class="footer minecraft-five">
         <p>A fanmade website for fun. &copy; 2026 by GeeTee_forSaken</p>
     </footer>
 
+    <!-- Script for Dropdown functionality -->
+    <script>
+        const menuToggle = document.getElementById('menu-toggle');
+        const dropdownMenu = document.getElementById('dropdown-menu');
+        const pageOverlay = document.getElementById('page-overlay');
+
+        // Function to toggle the menu and the blur overlay
+        function toggleMenu() {
+            dropdownMenu.classList.toggle('active');
+            pageOverlay.classList.toggle('active');
+        }
+
+        // Toggle on hamburger click
+        menuToggle.addEventListener('click', toggleMenu);
+
+        // Allow users to close the menu by clicking anywhere on the darkened background
+        pageOverlay.addEventListener('click', toggleMenu);
+    </script>
 </body>
 </html>

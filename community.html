@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community - Dynawiki</title>
+    <style>
+        @font-face {
+            font-family: 'minecraft-ten';
+            src: url('resources/font/minecraft-ten/MinecraftTen.woff') format('woff'),
+                url('resources/font/minecraft-ten/MinecraftTen.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'minecraft-five';
+            src: url('resources/font/minecraft-five/MinecraftFive.woff') format('woff'),
+                url('resources/font/minecraft-five/MinecraftFive.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        /* CSS Reset & Base Styles */
+        .minecraft-ten {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'minecraft-ten', system-ui, -apple-system, sans-serif;
+        }
+
+        .minecraft-five {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'minecraft-five', system-ui, -apple-system, sans-serif;
+        }
+    
+        body {
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+
+        /* --- Navigation Bar --- */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: #fff;
+            border-bottom: 1px solid #eee;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .hamburger-btn {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 45px;
+            height: 40px;
+            background: transparent;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 8px;
+            z-index: 102;
+        }
+
+        .hamburger-btn span {
+            width: 100%;
+            height: 3px;
+            background-color: #333;
+            border-radius: 2px;
+            transition: all 0.3s linear;
+        }
+
+        .hamburger-btn:hover {
+            background-color: #f4f4f4;
+        }
+
+        .navbar h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .spacer {
+            width: 45px;
+        }
+
+        /* --- Dropdown Menu --- */
+        .dropdown-menu {
+            position: fixed;
+            top: 70px;
+            left: 2rem;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            width: 220px;
+            display: flex;
+            flex-direction: column;
+            z-index: 101;
+            opacity: 0;
+            transform: translateY(-10px);
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-menu.active {
+            opacity: 1;
+            transform: translateY(0);
+            visibility: visible;
+        }
+
+        .dropdown-menu a {
+            padding: 1rem;
+            text-decoration: none;
+            color: #333;
+            border-bottom: 1px solid #eee;
+            font-size: 1rem;
+        }
+
+        .dropdown-menu a:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: #f4f4f4;
+        }
+
+        /* --- Blur Overlay --- */
+        .page-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(6px);
+            z-index: 90;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .page-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* --- Page Hero Header --- */
+        .hero {
+            height: 30vh;
+            min-height: 200px;
+            background-color: #7289da; /* Discord Blurple vibe header */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            color: #fff;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* --- Section Shared Styling --- */
+        .content-section {
+            padding: 4rem 10%;
+        }
+
+        .bg-white { background-color: #ffffff; }
+        .bg-gray { background-color: #f4f4f4; }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 2rem;
+            color: #222;
+        }
+
+    /* --- Vertical Discord Cards --- */
+    .discord-grid {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 2.5rem;
+        flex-wrap: wrap;
+    }
+
+    .discord-vertical-card {
+        background-color: #2b2d31; /* Dark Discord background */
+        border-radius: 12px;
+        width: 280px;
+        height: 420px; /* Vertically long rectangle shape */
+        padding: 2.5rem 1.5rem 2rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between; /* Spacing items evenly top to bottom */
+        text-align: center;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        border: 1px solid #3f4147;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .discord-vertical-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+    }
+
+    /* 1. Circled PFP */
+    .discord-avatar-circle {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%; /* Perfect circle */
+        object-fit: cover;
+        background-color: #1e1f22;
+        border: 4px solid #3f4147;
+    }
+
+    /* 2. Server Name */
+    .discord-server-name {
+        font-size: 1.3rem;
+        color: #ffffff;
+        word-break: break-word;
+        margin: 1rem 0;
+        line-height: 1.3;
+    }
+
+    /* 3. Join Button */
+    .discord-join-btn {
+        display: inline-block;
+        width: 100%;
+        padding: 0.8rem 0;
+        background-color: #248046; /* Discord green */
+        color: #ffffff !important;
+        text-decoration: none;
+        border-radius: 6px;
+        font-size: 1rem;
+        font-weight: bold;
+        transition: background-color 0.2s ease;
+    }
+
+    .discord-join-btn:hover {
+        background-color: #1a6334;
+    }
+        /* --- Section 2: Articles List Layout --- */
+        .articles-list {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .article-card {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-decoration: none;
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .article-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+            border-color: #bbb;
+        }
+
+        .article-details h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.4rem;
+            color: #111;
+        }
+
+        .article-details p {
+            font-size: 0.95rem;
+            color: #666;
+        }
+
+        .article-tag {
+            background-color: #eeeeee;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            margin-left: 1rem;
+        }
+
+        /* --- Footer --- */
+        .footer {
+            background-color: #111;
+            color: #888;
+            text-align: center;
+            padding: 2rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .content-section {
+                padding: 3rem 5%;
+            }
+            .article-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            .article-tag {
+                margin-left: 0;
+            }
+            .discord-embed-card {
+                width: 100%;
+                max-width: 350px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Overlay for blur effect -->
+    <div class="page-overlay" id="page-overlay"></div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar minecraft-five">
+        <button class="hamburger-btn" id="menu-toggle" aria-label="Toggle navigation">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <h2>Dynawiki</h2>
+        <div class="spacer"></div>
+    </nav>
+
+    <!-- Dropdown Menu -->
+    <div class="dropdown-menu minecraft-five" id="dropdown-menu">
+        <a href="index.html">Home</a>
+        <a href="community.html">Community</a>
+        <a href="statistics.html">Statistics</a>
+        <a href="how-to.html">How-to-wiki</a>
+        <a href="https://mccisland.net" target="_blank">MCC Island</a>
+    </div>
+
+    <!-- Header Section -->
+    <header class="hero minecraft-ten">
+        <h1>Community Hub</h1>
+        <p>Connect with other Dynaball players & check out popular articles</p>
+    </header>
+
+    <!-- 1. Section: Discord Related (White Background) -->
+    <section class="content-section bg-white minecraft-ten">
+        <h2 class="section-title">Official Discord Servers</h2>
+        
+        <div class="discord-grid minecraft-five">
+            
+            <!-- DISCORD CARD #1 -->
+            <div class="discord-vertical-card">
+                <!-- Top: Circled Discord PFP -->
+                <img src="resources/image/discord-icon1.png" alt="Server PFP" class="discord-avatar-circle">
+                
+                <!-- Middle: Server Name -->
+                <h3 class="discord-server-name">Dynaball Central - Tourneys & More</h3>
+                
+                <!-- Bottom: Join Button -->
+                <a href="https://discord.gg/Gg2QyQRu3Q" target="_blank" class="discord-join-btn">Join Server</a>
+            </div>
+
+            <!-- DISCORD CARD #2 -->
+            <div class="discord-vertical-card">
+                <!-- Top: Circled Discord PFP -->
+                <img src="resources/image/discord-icon2.png" alt="Server PFP" class="discord-avatar-circle">
+                
+                <!-- Middle: Server Name -->
+                <h3 class="discord-server-name">MC Championship</h3>
+                
+                <!-- Bottom: Join Button -->
+                <a href="https://discord.gg/mcc" target="_blank" class="discord-join-btn">Join Server</a>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- 2. Section: Article Links -->
+    <section class="content-section bg-gray minecraft-ten">
+        <h2 class="section-title">Forum Articles</h2>
+        
+        <div class="articles-list">
+
+            <!-- ======================================================== -->
+            <!--   COPY & PASTE THE BLOCK BELOW TO ADD A NEW ARTICLE     -->
+            <!-- ======================================================== -->
+            
+            <!-- ARTICLE ITEM START -->
+            <a href="https://forums.mccisland.net" target="_blank" class="article-card">
+                <div class="article-details">
+                    <h3>Dynaball Strategy Guide: Advanced TNT Launching</h3>
+                    <p class="minecraft-five">Learn how to master gadget combinations and precise angles to beat opposing teams.</p>
+                </div>
+                <span class="article-tag">Guide</span>
+            </a>
+            <!-- ARTICLE ITEM END -->
+
+            <!-- ARTICLE ITEM START -->
+            <a href="https://forums.mccisland.net" target="_blank" class="article-card">
+                <div class="article-details">
+                    <h3>Community Highlights & Clip Compilations</h3>
+                    <p class="minecraft-five">A compilation of the funniest, wildest, and luckiest shots submitted by players.</p>
+                </div>
+                <span class="article-tag">Community</span>
+            </a>
+            <!-- ARTICLE ITEM END -->
+
+            <!-- ARTICLE ITEM START -->
+            <a href="https://forums.mccisland.net" target="_blank" class="article-card">
+                <div class="article-details">
+                    <h3>Understanding Map Formations & Rebuilding</h3>
+                    <p class="minecraft-five">How dropped explosion blocks can be used strategically to build tight defenses.</p>
+                </div>
+                <span class="article-tag">Tactics</span>
+            </a>
+            <!-- ARTICLE ITEM END -->
+
+            <!-- ADD NEW ARTICLES HERE -->
+
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer minecraft-five">
+        <p>A fanmade website for fun. &copy; 2026 by GeeTee_forSaken</p>
+    </footer>
+
+    <!-- Dropdown Script -->
+    <script>
+        const menuToggle = document.getElementById('menu-toggle');
+        const dropdownMenu = document.getElementById('dropdown-menu');
+        const pageOverlay = document.getElementById('page-overlay');
+
+        function toggleMenu() {
+            dropdownMenu.classList.toggle('active');
+            pageOverlay.classList.toggle('active');
+        }
+
+        menuToggle.addEventListener('click', toggleMenu);
+        pageOverlay.addEventListener('click', toggleMenu);
+    </script>
+</body>
+</html>
