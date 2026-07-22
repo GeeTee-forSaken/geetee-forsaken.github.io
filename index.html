@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dynawiki</title>
     <style>
-
+        /* --- Fonts --- */
         @font-face {
             font-family: 'minecraft-ten';
             src: url('resources/font/minecraft-ten/MinecraftTen.woff') format('woff'),
-                url('resources/font/minecraft-ten/MinecraftTen.woff2') format('woff2');
+                 url('resources/font/minecraft-ten/MinecraftTen.woff2') format('woff2');
             font-weight: normal;
             font-style: normal;
             font-display: swap;
@@ -18,33 +18,29 @@
         @font-face {
             font-family: 'minecraft-five';
             src: url('resources/font/minecraft-five/MinecraftFive.woff') format('woff'),
-                url('resources/font/minecraft-five/MinecraftFive.woff2') format('woff2');
+                 url('resources/font/minecraft-five/MinecraftFive.woff2') format('woff2');
             font-weight: normal;
             font-style: normal;
             font-display: swap;
         }
 
-        /* CSS Reset & Base Styles */
-        .minecraft-ten {
+        /* --- CSS Reset & Base Styles --- */
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'minecraft-ten', system-ui, -apple-system, sans-serif;
-        }
-
-        .minecraft-five {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'minecraft-five', system-ui, -apple-system, sans-serif;
         }
 
         body {
             line-height: 1.6;
             color: #333;
+            font-family: system-ui, -apple-system, sans-serif;
         }
 
-        /* --- A1: Navigation Bar --- */
+        .minecraft-ten { font-family: 'minecraft-ten', system-ui, sans-serif; }
+        .minecraft-five { font-family: 'minecraft-five', system-ui, sans-serif; }
+
+        /* --- Navigation Bar --- */
         .navbar {
             display: flex;
             justify-content: space-between;
@@ -57,7 +53,6 @@
             z-index: 100;
         }
 
-        /* Hamburger Menu Icon styling */
         .hamburger-btn {
             display: flex;
             flex-direction: column;
@@ -69,7 +64,7 @@
             border-radius: 4px;
             cursor: pointer;
             padding: 8px;
-            z-index: 102; /* Keeps it above the dark overlay */
+            z-index: 102;
         }
 
         .hamburger-btn span {
@@ -90,7 +85,7 @@
         }
 
         .spacer {
-            width: 45px; /* Matches hamburger width to keep title centered */
+            width: 45px;
         }
 
         /* --- Dropdown Menu --- */
@@ -140,8 +135,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.6); /* Darkens background */
-            backdrop-filter: blur(6px); /* Blurs background */
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(6px);
             z-index: 90;
             opacity: 0;
             visibility: hidden;
@@ -153,7 +148,7 @@
             visibility: visible;
         }
 
-        /* --- A2: Hero Image Section --- */
+        /* --- Hero Section --- */
         .hero {
             height: 60vh;
             min-height: 400px;
@@ -178,7 +173,7 @@
             font-size: 1.5rem;
         }
 
-        /* --- B1, B2, B3: Content Sections --- */
+        /* --- Content Sections --- */
         .content-section {
             display: flex;
             align-items: center;
@@ -189,10 +184,7 @@
 
         .bg-white { background-color: #ffffff; }
         .bg-gray { background-color: #f4f4f4; }
-
-        .row-reverse {
-            flex-direction: row-reverse;
-        }
+        .row-reverse { flex-direction: row-reverse; }
 
         .image-placeholder img {
             flex: 1;
@@ -204,6 +196,7 @@
             align-items: center;
             color: #666;
             border-radius: 8px;
+            object-fit: cover;
         }
 
         .text-content {
@@ -215,7 +208,7 @@
             margin-bottom: 1rem;
         }
 
-        /* --- C1: Auto-Scrolling Carousel --- */
+        /* --- Auto-Scrolling Carousel --- */
         .carousel-wrapper {
             background-color: #333;
             color: white;
@@ -254,7 +247,43 @@
             100% { transform: translateX(calc(-50% - 1rem)); } 
         }
 
-        /* --- D1: Footer --- */
+        /* --- Interactive Physics Objects (TNT & Mascot) --- */
+        .physics-box {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 48px;
+            height: 48px;
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+            z-index: 1000;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        }
+
+        .physics-box img {
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        .physics-box:active {
+            cursor: grabbing;
+        }
+
+        /* Mascot Spin Animation */
+        @keyframes mascot-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .spinning-sprite {
+            animation: mascot-spin 0.3s linear infinite;
+        }
+
+        /* --- Footer --- */
         .footer {
             background-color: #111;
             color: #888;
@@ -263,6 +292,7 @@
             font-size: 0.9rem;
         }
 
+        /* --- Responsive Design --- */
         @media (max-width: 768px) {
             .content-section, .row-reverse {
                 flex-direction: column;
@@ -270,8 +300,9 @@
                 gap: 2rem;
                 padding: 3rem 5%;
             }
-            .image-placeholder {
+            .image-placeholder, .image-placeholder img {
                 width: 100%;
+                height: auto;
             }
         }
     </style>
@@ -281,7 +312,7 @@
     <!-- Overlay for blur effect -->
     <div class="page-overlay" id="page-overlay"></div>
 
-    <!-- A1: Navigation bar -->
+    <!-- Navigation bar -->
     <nav class="navbar minecraft-five">
         <button class="hamburger-btn" id="menu-toggle" aria-label="Toggle navigation">
             <span></span>
@@ -294,19 +325,20 @@
 
     <!-- Dropdown Menu items -->
     <div class="dropdown-menu minecraft-five" id="dropdown-menu">
+        <a href="index.html">Home</a>
         <a href="community.html">Community</a>
         <a href="statistics.html">Statistics</a>
         <a href="how-to.html">How-to-wiki</a>
-        <a href="https://mcchampionship.com/pages/mcci-dynaball/" target="_blank">MCC Island</a>
+        <a href="https://mccisland.net" target="_blank">MCC Island</a>
     </div>
 
-    <!-- A2: Image background placeholder -->
+    <!-- Hero Section -->
     <header class="hero minecraft-ten">
         <h1>DYNAWIKI</h1>
         <p>A fan made MCCI website related to Dynaball</p>
     </header>
 
-    <!-- B1: White background, Image Left / Text Right -->
+    <!-- Section 1 -->
     <section class="content-section" style="background-color: rgb(145, 5, 47)">
         <div class="image-placeholder"><img src="resources/image/section1.png" alt="Section 1"></div>
         <div class="text-content" style="color: #fff;">
@@ -315,7 +347,7 @@
         </div>
     </section>
 
-    <!-- B2: Gray background, Image Right / Text Left -->
+    <!-- Section 2 -->
     <section class="content-section row-reverse" style="background-color: rgb(197, 128, 0);">
         <div class="image-placeholder"><img src="resources/image/section2.png" alt="Section 2"></div>
         <div class="text-content" style="color: #fff;">
@@ -324,7 +356,7 @@
         </div>
     </section>
 
-    <!-- B3: White background, Image Left / Text Right -->
+    <!-- Section 3 -->
     <section class="content-section" style="background-color: rgb(12, 85, 85)">
         <div class="image-placeholder"><img src="resources/image/section3.png" alt="Section 3"></div>
         <div class="text-content" style="color: #fff;">
@@ -333,7 +365,7 @@
         </div>
     </section>
 
-    <!-- C1: Auto-scrolling horizontal frames -->
+    <!-- Carousel Section -->
     <section class="carousel-wrapper minecraft-five">
         <h2 style="text-align: center; margin-bottom: 2rem; padding: 0 1rem;" class="minecraft-ten">Community Testimonies</h2>
         <div class="carousel-track">
@@ -351,35 +383,329 @@
         </div>
     </section>
 
-    <!-- B3: White background, Image Left / Text Right -->
+    <!-- Final Link Section -->
     <section class="content-section bg-white minecraft-ten">
-        <div class="text-content">
-            <h3>Visit the official MCC Island website <a href="https://mccisland.net">here!</a></h3>
+        <div class="text-content" style="text-align: center;">
+            <h3>Visit the official MCC Island website <a href="https://mccisland.net" target="_blank" style="color: #007bff; text-decoration: none;">here!</a></h3>
         </div>
     </section>
 
-    <!-- D1: Footer -->
+    <!-- Footer -->
     <footer class="footer minecraft-five">
         <p>A fanmade website for fun. &copy; 2026 by GeeTee_forSaken</p>
     </footer>
 
-    <!-- Script for Dropdown functionality -->
+    <!-- Interactive Elements: TNT and Mascot -->
+    <div id="tnt-physics" class="physics-box">
+        <img src="resources/image/tnt.png" alt="TNT Texture">
+    </div>
+
+    <div id="mascot-physics" class="physics-box">
+        <img id="mascot-img" src="resources/image/mascot_idle.png" alt="Mascot Texture">
+    </div>
+
+    <!-- ========================================== -->
+    <!-- SCRIPTS                                    -->
+    <!-- ========================================== -->
+
+    <!-- Script 1: Navigation Dropdown -->
     <script>
         const menuToggle = document.getElementById('menu-toggle');
         const dropdownMenu = document.getElementById('dropdown-menu');
         const pageOverlay = document.getElementById('page-overlay');
 
-        // Function to toggle the menu and the blur overlay
         function toggleMenu() {
             dropdownMenu.classList.toggle('active');
             pageOverlay.classList.toggle('active');
         }
 
-        // Toggle on hamburger click
         menuToggle.addEventListener('click', toggleMenu);
-
-        // Allow users to close the menu by clicking anywhere on the darkened background
         pageOverlay.addEventListener('click', toggleMenu);
+    </script>
+
+    <!-- Script 2: Physics Engine for TNT & Mascot -->
+    <script>
+        const MASCOT_SPRITES = {
+            drag:    'resources/image/mascot_drag.png',    
+            fall:    'resources/image/mascot_fall.png',    
+            idle:    'resources/image/mascot_idle.png',    
+            swing:   'resources/image/mascot_swing.png',   
+            land:    'resources/image/mascot_land.png'     
+        };
+
+        const BOX_SIZE = 64;
+        const HARD_SWING_THRESHOLD = 16; 
+
+        const mascotImg = document.getElementById('mascot-img');
+        let landingTimeout = null;
+        let currentMascotState = 'idle';
+
+        function setMascotState(state) {
+            if (currentMascotState === state && state !== 'land') return;
+            currentMascotState = state;
+
+            if (state === 'swing') {
+                mascotImg.classList.add('spinning-sprite');
+            } else {
+                mascotImg.classList.remove('spinning-sprite');
+            }
+
+            if (MASCOT_SPRITES[state]) {
+                mascotImg.src = MASCOT_SPRITES[state];
+            }
+        }
+
+        function triggerLandingSprite() {
+            setMascotState('land'); 
+            if (landingTimeout) clearTimeout(landingTimeout);
+            
+            landingTimeout = setTimeout(() => {
+                if (currentMascotState === 'land') {
+                    setMascotState('idle'); 
+                }
+            }, 250);
+        }
+
+        class PhysicsEntity {
+            constructor(element, initialX, initialY, isMascot = false) {
+                this.element = element;
+                this.isMascot = isMascot;
+                
+                this.posX = initialX;
+                this.posY = initialY;
+                this.targetX = initialX; 
+                this.targetY = initialY;
+
+                this.vx = 0;
+                this.vy = 0;
+
+                this.isDragging = false;
+                this.prevMouseX = 0;
+                this.prevMouseY = 0;
+
+                this.isCarromMode = false;
+                this.bounceCount = 0;
+                this.collisionsDisabled = false;
+                this.isRespawning = false;
+
+                this.gravity = 0;
+                this.friction = 0.985;
+
+                this.initEvents();
+            }
+
+            initEvents() {
+                this.element.addEventListener('pointerdown', (e) => {
+                    if (this.isRespawning) return;
+                    this.isDragging = true;
+                    this.vx = 0;
+                    this.vy = 0;
+                    this.bounceCount = 0;
+                    this.collisionsDisabled = false;
+                    this.isCarromMode = false;
+
+                    this.prevMouseX = e.clientX;
+                    this.prevMouseY = e.clientY;
+                    this.element.setPointerCapture(e.pointerId);
+
+                    if (this.isMascot) {
+                        setMascotState('drag'); 
+                    }
+                });
+
+                this.element.addEventListener('pointermove', (e) => {
+                    if (!this.isDragging) return;
+
+                    this.vx = e.clientX - this.prevMouseX;
+                    this.vy = e.clientY - this.prevMouseY;
+
+                    this.posX = e.clientX - BOX_SIZE / 2;
+                    this.posY = e.clientY - BOX_SIZE / 2;
+
+                    this.prevMouseX = e.clientX;
+                    this.prevMouseY = e.clientY;
+                });
+
+                this.element.addEventListener('pointerup', (e) => {
+                    if (!this.isDragging) return;
+                    this.isDragging = false;
+                    this.element.releasePointerCapture(e.pointerId);
+
+                    const throwSpeed = Math.hypot(this.vx, this.vy);
+
+                    if (throwSpeed >= HARD_SWING_THRESHOLD) {
+                        this.isCarromMode = true;
+                        this.gravity = 0;
+                        this.friction = 1.0;
+
+                        if (this.isMascot) {
+                            setMascotState('swing'); 
+                        }
+                    } else {
+                        this.isCarromMode = false;
+                        this.gravity = 0.25;
+                        this.friction = 0.98;
+
+                        if (this.isMascot) {
+                            setMascotState('fall'); 
+                        }
+                    }
+                });
+            }
+
+            handleCollisions() {
+                const width = window.innerWidth;
+                const height = window.innerHeight;
+
+                if (this.isCarromMode) {
+                    let hitWall = false;
+
+                    if (this.posY + BOX_SIZE > height) {
+                        this.posY = height - BOX_SIZE;
+                        this.vy *= -1;
+                        hitWall = true;
+                    } else if (this.posY < 0) {
+                        this.posY = 0;
+                        this.vy *= -1;
+                        hitWall = true;
+                    }
+
+                    if (this.posX + BOX_SIZE > width) {
+                        this.posX = width - BOX_SIZE;
+                        this.vx *= -1;
+                        hitWall = true;
+                    } else if (this.posX < 0) {
+                        this.posX = 0;
+                        this.vx *= -1;
+                        hitWall = true;
+                    }
+
+                    if (hitWall) {
+                        this.bounceCount++;
+                        if (this.bounceCount >= 7) {
+                            this.collisionsDisabled = true; 
+                        }
+                    }
+                } else {
+                    if (this.posY + BOX_SIZE > height) {
+                        this.posY = height - BOX_SIZE;
+                        
+                        if (this.isMascot && Math.abs(this.vy) > 1.5) {
+                            triggerLandingSprite(); 
+                        }
+                        
+                        this.vy *= -0.4; 
+                        this.vx *= 0.8;  
+                    }
+
+                    if (this.posY < 0) {
+                        this.posY = 0;
+                        this.vy *= -0.5;
+                    }
+
+                    if (this.posX + BOX_SIZE > width) {
+                        this.posX = width - BOX_SIZE;
+                        this.vx *= -0.6;
+                    } else if (this.posX < 0) {
+                        this.posX = 0;
+                        this.vx *= -0.6;
+                    }
+                }
+            }
+
+            triggerSkyRespawn() {
+                this.isRespawning = true;
+                this.vx = 0;
+                this.vy = 0;
+                this.isCarromMode = false;
+
+                this.posX = this.targetX;
+                this.posY = -120;
+
+                if (this.isMascot) {
+                    setMascotState('fall'); 
+                }
+
+                let fallSpeed = 0;
+                const dropGravity = 0.8;
+
+                const animateDrop = () => {
+                    fallSpeed += dropGravity;
+                    this.posY += fallSpeed;
+
+                    if (this.posY >= this.targetY) {
+                        this.posY = this.targetY;
+                        this.bounceCount = 0;
+                        this.collisionsDisabled = false;
+                        this.isRespawning = false;
+                        this.gravity = 0;
+                        this.friction = 0.985;
+
+                        if (this.isMascot) {
+                            triggerLandingSprite(); 
+                        }
+                        return;
+                    }
+
+                    this.element.style.transform = `translate3d(${this.posX}px, ${this.posY}px, 0)`;
+                    requestAnimationFrame(animateDrop);
+                };
+
+                setTimeout(() => {
+                    requestAnimationFrame(animateDrop);
+                }, 500);
+            }
+
+            update() {
+                if (!this.isDragging && !this.isRespawning) {
+                    this.vy += this.gravity;
+                    this.vx *= this.friction;
+                    this.vy *= this.friction;
+
+                    this.posX += this.vx;
+                    this.posY += this.vy;
+
+                    if (this.isMascot && !this.isCarromMode && currentMascotState !== 'land') {
+                        if (Math.hypot(this.vx, this.vy) < 0.2 && (this.posY + BOX_SIZE >= window.innerHeight - 2)) {
+                            setMascotState('idle'); 
+                        } else if (this.vy > 0.5 && currentMascotState !== 'fall') {
+                            setMascotState('fall'); 
+                        }
+                    }
+
+                    if (!this.collisionsDisabled) {
+                        this.handleCollisions();
+                    } else {
+                        const isOffScreen = this.posX < -120 || this.posX > window.innerWidth + 120 ||
+                                            this.posY < -120 || this.posY > window.innerHeight + 120;
+                        if (isOffScreen) {
+                            this.triggerSkyRespawn();
+                        }
+                    }
+                }
+
+                if (!this.isRespawning) {
+                    this.element.style.transform = `translate3d(${this.posX}px, ${this.posY}px, 0)`;
+                }
+            }
+        }
+
+        const tntElem = document.getElementById('tnt-physics');
+        const mascotElem = document.getElementById('mascot-physics');
+
+        const tntInitialX = window.innerWidth - BOX_SIZE - 40;
+        const mascotInitialX = window.innerWidth - (BOX_SIZE * 2) - 55; 
+
+        const tntEntity = new PhysicsEntity(tntElem, tntInitialX, 10, false);
+        const mascotEntity = new PhysicsEntity(mascotElem, mascotInitialX, 10, true);
+
+        function mainPhysicsLoop() {
+            tntEntity.update();
+            mascotEntity.update();
+            requestAnimationFrame(mainPhysicsLoop);
+        }
+
+        mainPhysicsLoop();
     </script>
 </body>
 </html>
