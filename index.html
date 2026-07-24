@@ -4,150 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dynawiki</title>
+    
+    <!-- Link to the shared stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    
     <style>
-        /* --- Fonts --- */
-        @font-face {
-            font-family: 'minecraft-ten';
-            src: url('resources/font/minecraft-ten/MinecraftTen.woff') format('woff'),
-                 url('resources/font/minecraft-ten/MinecraftTen.woff2') format('woff2');
-            font-weight: normal;
-            font-style: normal;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'minecraft-five';
-            src: url('resources/font/minecraft-five/MinecraftFive.woff') format('woff'),
-                 url('resources/font/minecraft-five/MinecraftFive.woff2') format('woff2');
-            font-weight: normal;
-            font-style: normal;
-            font-display: swap;
-        }
-
-        /* --- CSS Reset & Base Styles --- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            line-height: 1.6;
-            color: #333;
-            font-family: system-ui, -apple-system, sans-serif;
-        }
-
-        .minecraft-ten { font-family: 'minecraft-ten', system-ui, sans-serif; }
-        .minecraft-five { font-family: 'minecraft-five', system-ui, sans-serif; }
-
-        /* --- Navigation Bar --- */
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 2rem;
-            background-color: #fff;
-            border-bottom: 1px solid #eee;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .hamburger-btn {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around;
-            width: 45px;
-            height: 40px;
-            background: transparent;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            cursor: pointer;
-            padding: 8px;
-            z-index: 102;
-        }
-
-        .hamburger-btn span {
-            width: 100%;
-            height: 3px;
-            background-color: #333;
-            border-radius: 2px;
-            transition: all 0.3s linear;
-        }
-
-        .hamburger-btn:hover {
-            background-color: #f4f4f4;
-        }
-
-        .navbar h2 {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-
-        .spacer {
-            width: 45px;
-        }
-
-        /* --- Dropdown Menu --- */
-        .dropdown-menu {
-            position: fixed;
-            top: 70px;
-            left: 2rem;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            width: 220px;
-            display: flex;
-            flex-direction: column;
-            z-index: 101;
-            opacity: 0;
-            transform: translateY(-10px);
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .dropdown-menu.active {
-            opacity: 1;
-            transform: translateY(0);
-            visibility: visible;
-        }
-
-        .dropdown-menu a {
-            padding: 1rem;
-            text-decoration: none;
-            color: #333;
-            border-bottom: 1px solid #eee;
-            font-size: 1rem;
-        }
-
-        .dropdown-menu a:last-child {
-            border-bottom: none;
-        }
-
-        .dropdown-menu a:hover {
-            background-color: #f4f4f4;
-        }
-
-        /* --- Blur Overlay --- */
-        .page-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(6px);
-            z-index: 90;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-
-        .page-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
         /* --- Hero Section --- */
         .hero {
             height: 60vh;
@@ -182,8 +43,6 @@
             gap: 4rem;
         }
 
-        .bg-white { background-color: #ffffff; }
-        .bg-gray { background-color: #f4f4f4; }
         .row-reverse { flex-direction: row-reverse; }
 
         .image-placeholder img {
@@ -221,11 +80,13 @@
             display: flex;
             gap: 2rem;
             width: max-content;
-            animation: scroll 15s linear infinite;
+            /* REMOVED: animation: scroll ... */
+            cursor: grab;
+            touch-action: pan-y; /* Allows normal vertical page scrolling */
         }
 
-        .carousel-track:hover {
-            animation-play-state: paused;
+        .carousel-track:active {
+            cursor: grabbing;
         }
 
         .frame {
@@ -240,11 +101,10 @@
             white-space: normal;
             padding: 1.5rem;
             text-align: center;
-        }
-
-        @keyframes scroll {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(calc(-50% - 1rem)); } 
+            
+            /* Added to prevent text highlighting and ghost-image dragging */
+            user-select: none; 
+            -webkit-user-drag: none; 
         }
 
         /* --- Interactive Physics Objects (TNT & Mascot) --- */
@@ -259,6 +119,11 @@
             touch-action: none;
             z-index: 1000;
             filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        }
+
+        /* Ensure TNT is layered above the mascot */
+        #tnt-physics {
+            z-index: 1001;
         }
 
         .physics-box img {
@@ -281,15 +146,6 @@
 
         .spinning-sprite {
             animation: mascot-spin 0.3s linear infinite;
-        }
-
-        /* --- Footer --- */
-        .footer {
-            background-color: #111;
-            color: #888;
-            text-align: center;
-            padding: 2rem 1rem;
-            font-size: 0.9rem;
         }
 
         /* --- Responsive Design --- */
@@ -328,7 +184,7 @@
         <a href="index.html">Home</a>
         <a href="community.html">Community</a>
         <a href="statistics.html">Statistics</a>
-        <a href="how-to.html">How-to-wiki</a>
+        <a href="about-us.html">About Us</a>
         <a href="https://mccisland.net" target="_blank">MCC Island</a>
     </div>
 
@@ -369,17 +225,43 @@
     <section class="carousel-wrapper minecraft-five">
         <h2 style="text-align: center; margin-bottom: 2rem; padding: 0 1rem;" class="minecraft-ten">Community Testimonies</h2>
         <div class="carousel-track">
-            <div class="frame">Dynaball allowed me to meet lots of really cool people online and build up my social confidence which has helped me so much in so many different areas of life -Hw</div>
-            <div class="frame">probably would get so much more done if i didn't play dynaball -b</div>
+            <div class="frame">Dynaball allowed me to meet lots of really cool people online and build up my social confidence -Hw</div>
+            <div class="frame">probably would get so much more done if i didn't play dynaball -bdl</div>
             <div class="frame">Dynaball is the perfect Minecraft mini game. You can have fun as a beginner alongside veterans. -aWD</div>
             <div class="frame">dynaball is the only game where you have a friendly chat with your enemies -ht</div>
-            <div class="frame">dynaball is great bc it's fun to explode ur friends -f</div>
+            <div class="frame">dynaball is great cuz it's fun to explode your friends -frk</div>
+            <div class="frame">I am now a regular MCCI player, and Dynaball is one and only unique game to play with your beloved friends -GT</div>
+            <div class="frame">dynaball is a peak game 👍-Tr</div>
+            <div class="frame">Balling in dyna = funsies :3 -Spn</div>
+            <div class="frame">Dyna was the first mini game to really click with me, it's fun and fair -LM</div>
+            <div class="frame">Dynaball players are very easy to talk to and someone always has some advice -CC</div>
+            <div class="frame">dynaball is my favorite game it’s what I mostly stream :3 -Hck</div>
+            <div class="frame">dynaball is big booms and falling into the endless void and i think thats veryvery neat🙂‍↕️ -rx</div>
+            <div class="frame">Dynaball is for me because arson is illegal 😇 -LL</div>
+            <div class="frame">dynaball is the bane of my existence /lh -VE</div>
+            <div class="frame">it's the game for all fun and games -Mju</div>
+            <div class="frame">dynaball is a perfect mix of chaos and strategy -BB</div>
+            <div class="frame">Dyna is my fave game on mcci because its a team game you don't have to be crazy good at pvp to have fun! -KJ</div>
+            <div class="frame">dynaball is the most unpredictable game ever, from queue to game rng -KM</div>
             <!-- Duplicated set of 5 frames to create a seamless infinite scroll effect -->
-            <div class="frame">Dynaball allowed me to meet lots of really cool people online and build up my social confidence which has helped me so much in so many different areas of life -Hw</div>
-            <div class="frame">probably would get so much more done if i didn't play dynaball -b</div>
+            <div class="frame">Dynaball allowed me to meet lots of really cool people online and build up my social confidence -Hw</div>
+            <div class="frame">probably would get so much more done if i didn't play dynaball -bdl</div>
             <div class="frame">Dynaball is the perfect Minecraft mini game. You can have fun as a beginner alongside veterans. -aWD</div>
             <div class="frame">dynaball is the only game where you have a friendly chat with your enemies -ht</div>
-            <div class="frame">dynaball is great bc it's fun to explode ur friends -f</div>
+            <div class="frame">dynaball is great cuz it's fun to explode your friends -frk</div>
+            <div class="frame">I am now a regular MCCI player, and Dynaball is one and only unique game to play with your beloved friends -GT</div>
+            <div class="frame">dynaball is a peak game 👍-Tr</div>
+            <div class="frame">Balling in dyna = funsies :3 -Spn</div>
+            <div class="frame">Dyna was the first mini game to really click with me, it's fun and fair -LM</div>
+            <div class="frame">Dynaball players are very easy to talk to and someone always has some advice -CC</div>
+            <div class="frame">dynaball is my favorite game it’s what I mostly stream :3 -Hck</div>
+            <div class="frame">dynaball is big booms and falling into the endless void and i think thats veryvery neat🙂‍↕️ -rx</div>
+            <div class="frame">Dynaball is for me because arson is illegal 😇 -LL</div>
+            <div class="frame">dynaball is the bane of my existence /lh -VE</div>
+            <div class="frame">it's the game for all fun and games -Mju</div>
+            <div class="frame">dynaball is a perfect mix of chaos and strategy -BB</div>
+            <div class="frame">Dyna is my fave game on mcci because its a team game you don't have to be crazy good at pvp to have fun! -KJ</div>
+            <div class="frame">dynaball is the most unpredictable game ever, from queue to game rng -KM</div>
         </div>
     </section>
 
@@ -395,13 +277,13 @@
         <p>A fanmade website for fun. &copy; 2026 by GeeTee_forSaken</p>
     </footer>
 
-    <!-- Interactive Elements: TNT and Mascot -->
-    <div id="tnt-physics" class="physics-box">
-        <img src="resources/image/tnt.png" alt="TNT Texture">
-    </div>
-
+    <!-- Interactive Elements: Mascot and TNT -->
     <div id="mascot-physics" class="physics-box">
         <img id="mascot-img" src="resources/image/mascot_idle.png" alt="Mascot Texture">
+    </div>
+
+    <div id="tnt-physics" class="physics-box">
+        <img src="resources/image/tnt.png" alt="TNT Texture">
     </div>
 
     <!-- ========================================== -->
@@ -423,8 +305,140 @@
         pageOverlay.addEventListener('click', toggleMenu);
     </script>
 
-    <!-- Script 2: Physics Engine for TNT & Mascot -->
+    <!-- Script 2: Drag-to-Scroll Carousel -->
     <script>
+        const track = document.querySelector('.carousel-track');
+        const frames = Array.from(track.children);
+        
+        let isDragging = false;
+        let startX = 0;
+        let currentTranslate = 0;
+        let prevTranslate = 0;
+        
+        let velocity = 0;
+        let lastTime = 0;
+        let lastX = 0;
+        
+        let animationID;
+        let isAutoScrolling = true;
+        let resumeTimeout = null;
+        let autoScrollSpeed = -1; // Standard auto-scroll speed (pixels per frame)
+        let loopWidth = 0;
+
+        function initCarousel() {
+            // Find the exact width of the first set of items to know where to loop seamlessly
+            const halfCount = Math.floor(frames.length / 2);
+            if (frames.length > 1) {
+                // Distance from start of frame 1 to start of the first duplicated frame
+                loopWidth = frames[halfCount].offsetLeft - frames[0].offsetLeft;
+            }
+            requestAnimationFrame(renderCarousel);
+        }
+
+        function getPositionX(event) {
+            return event.type.includes('mouse') ? event.pageX : event.touches[0].clientX;
+        }
+
+        function handleDragStart(event) {
+            isDragging = true;
+            isAutoScrolling = false;
+            if (resumeTimeout) clearTimeout(resumeTimeout);
+            
+            startX = getPositionX(event);
+            prevTranslate = currentTranslate;
+            lastX = startX;
+            lastTime = performance.now();
+            velocity = 0;
+        }
+
+        function handleDragMove(event) {
+            if (!isDragging) return;
+            
+            const currentX = getPositionX(event);
+            const delta = currentX - startX;
+            currentTranslate = prevTranslate + delta;
+
+            // Calculate velocity for inertia (px per frame roughly)
+            const now = performance.now();
+            const timeDelta = now - lastTime;
+            if (timeDelta > 0) {
+                velocity = ((currentX - lastX) / timeDelta) * 16.67; 
+            }
+            
+            lastX = currentX;
+            lastTime = now;
+        }
+
+        function handleDragEnd() {
+            isDragging = false;
+            
+            // Wait 3 seconds before resuming auto-scroll
+            resumeTimeout = setTimeout(() => {
+                isAutoScrolling = true;
+            }, 3000); 
+        }
+
+        // Mouse Events
+        track.addEventListener('mousedown', handleDragStart);
+        window.addEventListener('mousemove', handleDragMove);
+        window.addEventListener('mouseup', handleDragEnd);
+        
+        // Touch Events
+        track.addEventListener('touchstart', handleDragStart, { passive: true });
+        window.addEventListener('touchmove', handleDragMove, { passive: true });
+        window.addEventListener('touchend', handleDragEnd);
+
+        // Main Animation Loop
+        function renderCarousel() {
+            if (!isDragging) {
+                if (isAutoScrolling) {
+                    // Smoothly transition from inertia back to constant auto-scroll
+                    if (Math.abs(velocity) > Math.abs(autoScrollSpeed) && velocity < 0) {
+                        currentTranslate += velocity;
+                        velocity *= 0.95;
+                    } else {
+                        currentTranslate += autoScrollSpeed;
+                        velocity = 0;
+                    }
+                } else {
+                    // Apply momentum friction when dragging stops
+                    currentTranslate += velocity;
+                    velocity *= 0.95; // Friction multiplier
+                    if (Math.abs(velocity) < 0.1) velocity = 0;
+                }
+            }
+
+            // Infinite loop check
+            if (loopWidth > 0) {
+                // If we scrolled past the first set, jump back exactly one set-width
+                while (currentTranslate <= -loopWidth) {
+                    currentTranslate += loopWidth;
+                }
+                // If we dragged too far to the left (past 0), jump forward exactly one set-width
+                while (currentTranslate > 0) {
+                    currentTranslate -= loopWidth;
+                }
+            }
+
+            track.style.transform = `translate3d(${currentTranslate}px, 0, 0)`;
+            animationID = requestAnimationFrame(renderCarousel);
+        }
+
+        // Initialize on load and recalculate loop width on resize
+        window.addEventListener('load', initCarousel);
+        window.addEventListener('resize', () => {
+            const halfCount = Math.floor(frames.length / 2);
+            if (frames.length > 1) {
+                loopWidth = frames[halfCount].offsetLeft - frames[0].offsetLeft;
+            }
+        });
+    </script>
+
+    <!-- Script 3: Interactive Physics -->
+    <script>
+        // ==========================================
+        // MASCOT & ASSETS CONFIGURATION
+        // ==========================================
         const MASCOT_SPRITES = {
             drag:    'resources/image/mascot_drag.png',    
             fall:    'resources/image/mascot_fall.png',    
@@ -433,6 +447,7 @@
             land:    'resources/image/mascot_land.png'     
         };
 
+        const EXPLOSION_SRC = 'resources/image/explosion.png';
         const BOX_SIZE = 64;
         const HARD_SWING_THRESHOLD = 16; 
 
@@ -466,6 +481,33 @@
             }, 250);
         }
 
+        // Spawn transient explosion PNG overlay at specific (x, y) - 200% Larger
+        function triggerExplosion(x, y, duration = 200) {
+            const explosionSize = BOX_SIZE * 3.0; // 200% larger explosion size
+            const explosion = document.createElement('img');
+            explosion.src = EXPLOSION_SRC;
+            explosion.style.position = 'fixed';
+            // Center the larger explosion around target (x, y)
+            explosion.style.left = `${x - (explosionSize - BOX_SIZE) / 2}px`;
+            explosion.style.top = `${y - (explosionSize - BOX_SIZE) / 2}px`;
+            explosion.style.width = `${explosionSize}px`;
+            explosion.style.height = `${explosionSize}px`;
+            explosion.style.zIndex = '1002';
+            explosion.style.pointerEvents = 'none';
+            explosion.style.imageRendering = 'pixelated';
+
+            document.body.appendChild(explosion);
+
+            setTimeout(() => {
+                if (explosion.parentNode) {
+                    explosion.parentNode.removeChild(explosion);
+                }
+            }, duration);
+        }
+
+        // ==========================================
+        // REUSABLE PHYSICS ENTITY CLASS
+        // ==========================================
         class PhysicsEntity {
             constructor(element, initialX, initialY, isMascot = false) {
                 this.element = element;
@@ -480,6 +522,7 @@
                 this.vy = 0;
 
                 this.isDragging = false;
+                this.hasBeenDragged = false; 
                 this.prevMouseX = 0;
                 this.prevMouseY = 0;
 
@@ -487,6 +530,7 @@
                 this.bounceCount = 0;
                 this.collisionsDisabled = false;
                 this.isRespawning = false;
+                this.isStuck = false; 
 
                 this.gravity = 0;
                 this.friction = 0.985;
@@ -496,8 +540,9 @@
 
             initEvents() {
                 this.element.addEventListener('pointerdown', (e) => {
-                    if (this.isRespawning) return;
+                    if (this.isRespawning || this.isStuck) return;
                     this.isDragging = true;
+                    this.hasBeenDragged = true; 
                     this.vx = 0;
                     this.vy = 0;
                     this.bounceCount = 0;
@@ -543,7 +588,7 @@
                         }
                     } else {
                         this.isCarromMode = false;
-                        this.gravity = 0.25;
+                        this.gravity = 0.9;
                         this.friction = 0.98;
 
                         if (this.isMascot) {
@@ -559,31 +604,51 @@
 
                 if (this.isCarromMode) {
                     let hitWall = false;
+                    let impactX = this.posX;
+                    let impactY = this.posY;
 
                     if (this.posY + BOX_SIZE > height) {
                         this.posY = height - BOX_SIZE;
                         this.vy *= -1;
                         hitWall = true;
+                        impactY = height - BOX_SIZE;
                     } else if (this.posY < 0) {
                         this.posY = 0;
                         this.vy *= -1;
                         hitWall = true;
+                        impactY = 0;
                     }
 
                     if (this.posX + BOX_SIZE > width) {
                         this.posX = width - BOX_SIZE;
                         this.vx *= -1;
                         hitWall = true;
+                        impactX = width - BOX_SIZE;
                     } else if (this.posX < 0) {
                         this.posX = 0;
                         this.vx *= -1;
                         hitWall = true;
+                        impactX = 0;
                     }
 
                     if (hitWall) {
                         this.bounceCount++;
-                        if (this.bounceCount >= 7) {
-                            this.collisionsDisabled = true; 
+                        
+                        if (!this.isMascot) {
+                            if (this.bounceCount === 10) {
+                                // 1. Trigger enlarged explosion on 3rd bounce impact
+                                triggerExplosion(impactX, impactY, 200);
+
+                                // 2. Stop movement entirely
+                                this.vx = 0;
+                                this.vy = 0;
+                                this.collisionsDisabled = true;
+
+                                // 3. Trigger sky drop respawn (handles invisibility instantly now)
+                                this.triggerSkyRespawn();
+                            }
+                        } else if (this.isMascot && this.bounceCount >= 10) {
+                            this.collisionsDisabled = true;
                         }
                     }
                 } else {
@@ -619,6 +684,9 @@
                 this.vy = 0;
                 this.isCarromMode = false;
 
+                // FIX: Hide element immediately so it doesn't linger at the border during delay
+                this.element.style.display = 'none';
+
                 this.posX = this.targetX;
                 this.posY = -120;
 
@@ -652,12 +720,14 @@
                 };
 
                 setTimeout(() => {
+                    // FIX: Ensure element becomes visible ONLY when it drops from the sky
+                    this.element.style.display = 'block';
                     requestAnimationFrame(animateDrop);
                 }, 500);
             }
 
             update() {
-                if (!this.isDragging && !this.isRespawning) {
+                if (!this.isDragging && !this.isRespawning && !this.isStuck) {
                     this.vy += this.gravity;
                     this.vx *= this.friction;
                     this.vy *= this.friction;
@@ -666,7 +736,7 @@
                     this.posY += this.vy;
 
                     if (this.isMascot && !this.isCarromMode && currentMascotState !== 'land') {
-                        if (Math.hypot(this.vx, this.vy) < 0.2 && (this.posY + BOX_SIZE >= window.innerHeight - 2)) {
+                        if (Math.hypot(this.vx, this.vy) < 0.2 && (this.posY + BOX_SIZE >= window.innerHeight - 5)) {
                             setMascotState('idle'); 
                         } else if (this.vy > 0.5 && currentMascotState !== 'fall') {
                             setMascotState('fall'); 
@@ -679,17 +749,27 @@
                         const isOffScreen = this.posX < -120 || this.posX > window.innerWidth + 120 ||
                                             this.posY < -120 || this.posY > window.innerHeight + 120;
                         if (isOffScreen) {
-                            this.triggerSkyRespawn();
+                            if (this.isMascot && isMascotComboLaunchActive) {
+                                isMascotComboLaunchActive = false;
+                                mascotEntity.triggerSkyRespawn();
+                                tntEntity.triggerSkyRespawn();
+                            } else if (!isMascotComboLaunchActive) {
+                                this.triggerSkyRespawn();
+                            }
                         }
                     }
                 }
 
+                // Transform update remains disabled while respawning delay is active, preventing visual glitches
                 if (!this.isRespawning) {
                     this.element.style.transform = `translate3d(${this.posX}px, ${this.posY}px, 0)`;
                 }
             }
         }
 
+        // ==========================================
+        // INITIALIZATION & CUSTOM COLLISION INTERACTION
+        // ==========================================
         const tntElem = document.getElementById('tnt-physics');
         const mascotElem = document.getElementById('mascot-physics');
 
@@ -699,9 +779,76 @@
         const tntEntity = new PhysicsEntity(tntElem, tntInitialX, 10, false);
         const mascotEntity = new PhysicsEntity(mascotElem, mascotInitialX, 10, true);
 
+        let isTNTStuckToMascot = false;
+        let isMascotComboLaunchActive = false;
+
+        // Checks collision between TNT and Mascot
+        function checkTNTAndMascotInteraction() {
+            if (isTNTStuckToMascot || mascotEntity.isStuck) return;
+
+            const isMascotOnGround = mascotEntity.posY + BOX_SIZE >= window.innerHeight - 5;
+            const isTNTSwung = tntEntity.isCarromMode || Math.hypot(tntEntity.vx, tntEntity.vy) > 10;
+
+            if (mascotEntity.hasBeenDragged && isMascotOnGround && isTNTSwung) {
+                // Collision Detection
+                const hit = Math.abs(tntEntity.posX - mascotEntity.posX) < BOX_SIZE * 0.8 &&
+                            Math.abs(tntEntity.posY - mascotEntity.posY) < BOX_SIZE * 0.8;
+
+                if (hit) {
+                    // --- 1. STICK TNT TO MASCOT HEAD ---
+                    isTNTStuckToMascot = true;
+                    mascotEntity.isStuck = true;
+                    
+                    // Freeze TNT motion
+                    tntEntity.vx = 0;
+                    tntEntity.vy = 0;
+                    tntEntity.isCarromMode = false;
+
+                    // --- 2. DELAY, EXPLODE & LAUNCH MASCOT ---
+                    setTimeout(() => {
+                        // Trigger enlarged explosion right at the stuck TNT/head position
+                        triggerExplosion(tntEntity.posX, tntEntity.posY, 250);
+
+                        // Immediately hide TNT
+                        isTNTStuckToMascot = false;
+                        tntElem.style.display = 'none';
+
+                        // Track active combo launch state
+                        isMascotComboLaunchActive = true;
+
+                        // Launch Mascot in Hard Swing / Carrom mode
+                        mascotEntity.isStuck = false;
+                        mascotEntity.isCarromMode = true;
+                        mascotEntity.gravity = 0;
+                        mascotEntity.friction = 1.0;
+                        mascotEntity.bounceCount = 0;
+                        mascotEntity.collisionsDisabled = false;
+
+                        // Random direction launch vector
+                        const launchDirection = Math.random() > 0.5 ? 1 : -1;
+                        mascotEntity.vx = launchDirection * 18;
+                        mascotEntity.vy = -18;
+
+                        // Set Mascot state to Spinning swing
+                        setMascotState('swing');
+                    }, 1200); 
+                }
+            }
+        }
+
         function mainPhysicsLoop() {
+            // Anchor TNT to mascot head while stuck
+            if (isTNTStuckToMascot) {
+                tntEntity.posX = mascotEntity.posX;
+                tntEntity.posY = mascotEntity.posY - 35;
+                tntElem.style.transform = `translate3d(${tntEntity.posX}px, ${tntEntity.posY}px, 0)`;
+            }
+
             tntEntity.update();
             mascotEntity.update();
+
+            checkTNTAndMascotInteraction();
+
             requestAnimationFrame(mainPhysicsLoop);
         }
 
