@@ -5,10 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tips & Tricks - Dynawiki</title>
     
-    <!-- Link to the shared stylesheet -->
     <link rel="stylesheet" href="../style.css">
     
     <style>
+        /* --- Box Sizing Reset --- */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
         /* --- Hero Header Section --- */
         .hero {
             height: 30vh;
@@ -40,7 +44,7 @@
             color: #222;
         }
 
-        /* --- 3-Column Grid Layout --- */
+        /* --- Grid Layout --- */
         .tips-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -49,7 +53,6 @@
             margin: 0 auto;
         }
 
-        /* --- Individual Tip Card --- */
         .tip-card {
             background-color: #ffffff;
             border: 1px solid #ddd;
@@ -111,9 +114,8 @@
             background: #ffffff;
             border-radius: 12px;
             width: 90%;
-            /* Increased maximum width for the side-by-side layout */
-            max-width: 900px;
-            padding: 2rem;
+            max-width: 950px;
+            padding: 2.5rem;
             position: relative;
             transform: scale(0.85);
             transition: transform 0.3s ease;
@@ -121,6 +123,7 @@
             max-height: 85vh;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
 
         .modal-backdrop.active .modal-container {
@@ -146,295 +149,374 @@
         }
 
         .modal-title {
-            font-size: 1.8rem;
+            font-size: 2rem;
             color: #222;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
             text-align: center;
         }
         
         .modal-subtitle {
             text-align: center; 
             color: #666; 
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            transition: opacity 0.3s ease;
         }
 
-        /* --- Layout Inside Modal (Buttons on Left, Text on Right) --- */
+        .modal-subtitle.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* --- Inner Modal Layout --- */
         .modal-body {
             display: flex;
             flex-direction: row;
             align-items: center;
+            justify-content: center;
             gap: 1.5rem;
+            flex: 1;
+            min-height: 0;
+            transition: all 0.4s ease;
         }
 
-        /* --- Offense / Defense Option Buttons --- */
+        /* --- Buttons Menu (Centered by Default with Larger Sizing) --- */
         .tactics-toggle {
             display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
+            flex-direction: row; 
+            gap: 2rem;
             flex-shrink: 0;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem 0;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
+        /* When an option is clicked, shift to left vertically */
+        .tactics-toggle.shifted {
+            flex-direction: column;
+            gap: 1rem;
+            padding: 0;
+        }
+
+        /* LARGER INITIAL BUTTON SIZE */
         .tactic-btn {
-            /* Big Squared Buttons */
-            width: 140px;
-            height: 140px;
+            width: 260px;
+            height: 260px;
             border: 4px solid transparent;
-            font-size: 1.4rem;
+            font-size: 1.6rem;
             font-weight: bold;
             cursor: pointer;
-            border-radius: 12px;
-            transition: all 0.2s ease;
+            border-radius: 16px;
+            transition: all 0.3s ease;
             color: #ffffff;
             display: flex;
             justify-content: center;
             align-items: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        /* Button Colors */
+        #btn-offense { background-color: #d9534f; }
+        #btn-defense { background-color: #0275d8; }
+        #btn-survival { background-color: #5cb85c; }
+
+        .tactic-btn:hover {
+            transform: translateY(-6px) scale(1.03);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.2);
+        }
+
+        /* SHRUNK SIZE WHEN SHIFTED TO LEFT PANEL */
+        .tactics-toggle.shifted .tactic-btn {
+            width: 110px;
+            height: 110px;
+            font-size: 1.05rem;
+            border-radius: 12px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
-        #btn-offense {
-            background-color: #d9534f; /* Initial Red */
+        .tactics-toggle.shifted .tactic-btn:hover {
+            transform: translateY(-2px);
         }
 
-        #btn-defense {
-            background-color: #0275d8; /* Initial Blue */
-        }
-
-        .tactic-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
-        }
-
-        /* Active Button States */
+        /* Active States */
         .tactic-btn.active-offense {
             border-color: #ffb3b3;
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(217, 83, 79, 0.5);
+            box-shadow: 0 0 20px rgba(217, 83, 79, 0.6);
         }
-
         .tactic-btn.active-defense {
             border-color: #b3d9ff;
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(2, 117, 216, 0.5);
+            box-shadow: 0 0 20px rgba(2, 117, 216, 0.6);
+        }
+        .tactic-btn.active-survival {
+            border-color: #c2f0c2;
+            box-shadow: 0 0 20px rgba(92, 184, 92, 0.6);
         }
 
-        /* --- Smooth Expandable Horizontal Text Panel --- */
+        /* --- Expandable Right Panel Container --- */
         .expandable-panel {
-            max-width: 0; /* Animates horizontally */
+            flex: 1;
+            max-width: 0;
             opacity: 0;
             overflow: hidden;
-            transition: max-width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s ease, padding 0.3s ease;
-            background-color: #f9f9f9;
-            border-radius: 12px;
-            border: 1px solid transparent;
-            /* Match the height of the two buttons + gap roughly */
-            height: 304px; 
-            padding: 0;
+            transition: max-width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s ease, margin-left 0.3s ease;
             display: flex;
             flex-direction: column;
+            min-height: 0;
+            height: 420px;
+            margin-left: 0;
         }
 
         .expandable-panel.expanded {
-            max-width: 650px; /* Expands to the side */
-            padding: 1.5rem;
+            max-width: 100%;
             opacity: 1;
-            border-color: #e0e0e0;
-            margin-left: 1rem;
+            margin-left: 1.5rem;
         }
 
+        /* Scrollable Container Inside Panel */
         .panel-content-scroll {
             flex: 1;
-            overflow-y: auto; /* Scrollable vertically */
-            font-size: 1.05rem;
-            line-height: 1.6;
-            color: #333;
-            /* Prevents text from looking squished during animation */
-            min-width: 350px; 
-            padding-right: 15px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            width: 100%;
+            min-width: 0;
         }
 
-        /* Customize Scrollbar for the text panel */
-        .panel-content-scroll::-webkit-scrollbar {
-            width: 8px;
+        /* --- Dynamic Section Elements --- */
+        .top-highlights-box {
+            background: #f1f3f5;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+            width: 100%;
         }
-        .panel-content-scroll::-webkit-scrollbar-track {
-            background: #eee;
-            border-radius: 4px;
+
+        .circle-placeholder {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            background-color: #ccc;
+            flex-shrink: 0;
         }
-        .panel-content-scroll::-webkit-scrollbar-thumb {
-            background: #ccc;
-            border-radius: 4px;
+
+        .section-box {
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            width: 100%;
         }
-        .panel-content-scroll::-webkit-scrollbar-thumb:hover {
-            background: #999;
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
+
+        .square-thumbnail {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+            background-color: #ddd;
+            flex-shrink: 0;
+            border: 1px solid #ccc;
+        }
+
+        .section-title-text {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #222;
+            margin: 0;
+            word-break: break-word;
+        }
+
+        .section-body-text {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #444;
+            margin: 0;
+            word-break: break-word;
+        }
+
+        /* Scrollbar */
+        .panel-content-scroll::-webkit-scrollbar { width: 6px; }
+        .panel-content-scroll::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        .panel-content-scroll::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+        .panel-content-scroll::-webkit-scrollbar-thumb:hover { background: #aaa; }
 
         /* --- Responsive Layout --- */
         @media (max-width: 992px) {
-            .tips-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+            .tips-grid { grid-template-columns: repeat(2, 1fr); }
+            .tactic-btn { width: 140px; height: 140px; font-size: 1.3rem; }
         }
 
         @media (max-width: 768px) {
-            .tips-grid {
-                grid-template-columns: 1fr;
-            }
-            .content-section {
-                padding: 3rem 5%;
-            }
-            
-            /* Mobile Modal Adjustments */
-            .modal-body {
-                flex-direction: column;
-            }
+            .tips-grid { grid-template-columns: 1fr; }
+            .modal-body { flex-direction: column; }
             .tactics-toggle {
                 flex-direction: row;
                 width: 100%;
-                justify-content: center;
                 gap: 1rem;
+                justify-content: center;
             }
-            .tactic-btn {
-                width: 110px;
-                height: 110px;
-                font-size: 1.1rem;
+            .tactics-toggle.shifted {
+                flex-direction: row;
+                gap: 0.5rem;
             }
+            .tactic-btn { width: 100px; height: 100px; font-size: 1rem; }
+            .tactics-toggle.shifted .tactic-btn { width: 85px; height: 85px; font-size: 0.85rem; }
             .expandable-panel {
+                max-height: 0;
                 max-width: 100%;
-                max-height: 0; /* Fallback to vertical animation on mobile */
-                height: auto;
-                transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease;
+                height: 320px;
+                transition: max-height 0.4s ease, opacity 0.3s ease;
             }
             .expandable-panel.expanded {
-                max-width: 100%;
-                max-height: 400px;
+                max-height: 350px;
                 margin-left: 0;
-            }
-            .panel-content-scroll {
-                min-width: 0;
+                margin-top: 0.5rem;
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- Overlay for blur effect -->
     <div class="page-overlay" id="page-overlay"></div>
 
-    <!-- Navigation Bar -->
+    <!-- Navigation -->
     <nav class="navbar minecraft-five">
         <button class="hamburger-btn" id="menu-toggle" aria-label="Toggle navigation">
-            <span></span>
-            <span></span>
-            <span></span>
+            <span></span><span></span><span></span>
         </button>
         <h2>Dynawiki</h2>
         <div class="spacer"></div>
     </nav>
 
-    <!-- Dropdown Menu -->
     <div class="dropdown-menu minecraft-five" id="dropdown-menu">
         <a href="../index.html">Home</a>
         <a href="../community.html">Community</a>
         <a href="../statistics.html">Statistics</a>
-        <a href="../about-us.html">About Us</a>
+        <a href="../about.html">About Us</a>
         <a href="https://mccisland.net" target="_blank">MCC Island</a>
     </div>
 
-    <!-- Header Section -->
     <header class="hero minecraft-ten">
         <h1>Tips & Tricks</h1>
         <p class="minecraft-five">Master tactics, launching strategies, and field defense</p>
     </header>
 
-    <!-- Main Section: 3-Column Grid -->
     <section class="content-section bg-white minecraft-ten">
-        <h2 class="section-title">Select Map</h2>
+        <h2 class="section-title">Tactical Guides</h2>
         
         <div class="tips-grid">
 
-            <!-- ======================================================== -->
-            <!--   COPY & PASTE A CARD BLOCK TO ADD MORE ITEMS INFINITELY   -->
-            <!-- ======================================================== -->
-
-            <!-- CARD ITEM 1 -->
+            <!-- CARD ITEM: ARMADA -->
             <div class="tip-card" 
                  data-title="Armada"
-                 data-offense="The first thing you do when you get TNT is to eliminate the levi block as much as you can. Sticking a player in the middle of the map makes them more vurnerable. Charging an airstrike into the middle of the map will also works. Spawners such as Spawner o' Skellys contribute well in terrain destruction by landing the spawner into the bottom of the boat is highly difficult technique yet gives the opponents a massive disadvantage to destroy its spawner."
-                 data-defense="Build inclined block slopes facing the enemy. When TNT lands on sloped structures, it bounces down into the void rather than exploding directly on your footing. This angled defense negates splash damage entirely if constructed flawlessly across your frontal line.">
-                <img src="../resources/image/articles/tips-and-tricks/map/Armada.png" alt="Slingshot Trajectory" class="tip-card-img">
+                 data-offense='{
+                    "highlights": [
+                        "../resources/image/section1.png",
+                        "../resources/image/section2.png",
+                        "../resources/image/section3.png"
+                    ],
+                    "sections": [
+                        {
+                            "thumb": "../resources/image/tnt.png",
+                            "title": "Levi Block Destruction",
+                            "text": "The first thing you do when you get TNT is to eliminate the levi block as much as you can. Sticking a player in the middle of the map makes them much more vulnerable."
+                        },
+                        {
+                            "thumb": "../resources/image/section1.png",
+                            "title": "Airstrike Tactics",
+                            "text": "Charging an airstrike into the middle of the map works extremely well to disrupt clumped defenders."
+                        },
+                        {
+                            "thumb": "../resources/image/section2.png",
+                            "title": "Spawner o Skeleton",
+                            "text": "Spawners contribute well in terrain destruction. Landing the spawner into the bottom of the boat is a highly difficult technique, yet gives opponents a massive disadvantage."
+                        }
+                    ]
+                 }'
+                 data-defense='{
+                    "highlights": [
+                        "../resources/image/section3.png",
+                        "../resources/image/tnt.png",
+                        "../resources/image/section1.png"
+                    ],
+                    "sections": [
+                        {
+                            "thumb": "../resources/image/section3.png",
+                            "title": "Sloped Barriers",
+                            "text": "Build inclined block slopes facing the enemy. When TNT lands on sloped structures, it bounces down into the void rather than exploding on your footing."
+                        },
+                        {
+                            "thumb": "../resources/image/section2.png",
+                            "title": "Frontline Defense",
+                            "text": "This angled defense negates splash damage entirely if constructed flawlessly across your entire frontal line."
+                        }
+                    ]
+                 }'
+                 data-survival='{
+                    "highlights": [
+                        "../resources/image/tnt.png",
+                        "../resources/image/section2.png"
+                    ],
+                    "sections": [
+                        {
+                            "thumb": "../resources/image/section1.png",
+                            "title": "Void Recovery",
+                            "text": "Always save a grapple or high-momentum gadget to save yourself if the platform beneath you gets destroyed."
+                        },
+                        {
+                            "thumb": "../resources/image/section3.png",
+                            "title": "Overtime Movement",
+                            "text": "Keep moving between valid blocks during overtime shrinking. Standing still makes you an easy target for splash damage."
+                        }
+                    ]
+                 }'>
+                <img src="../resources/image/articles/tips-and-tricks/map/Armada.png" alt="Armada" class="tip-card-img">
                 <h3 class="tip-card-title minecraft-ten">Armada</h3>
             </div>
-
-            <!-- CARD ITEM 2 -->
-            <div class="tip-card" 
-                 data-title="Gadget Combinations"
-                 data-offense="Combine explosive charges with knockback gadgets right as enemy players jump between islands. Airtime leaves targets completely helpless against incoming shots."
-                 data-defense="Keep shield barriers placed preemptively around spawn nodes. If an enemy gadget approaches, instantly crouch behind fortified structures to minimize pushback.">
-                <img src="resources/image/section2.png" alt="Gadget Combinations" class="tip-card-img">
-                <h3 class="tip-card-title minecraft-ten">Gadget Combinations</h3>
-            </div>
-
-            <!-- CARD ITEM 3 -->
-            <div class="tip-card" 
-                 data-title="Terrain Restructuring"
-                 data-offense="Target support beams and bottom block clusters beneath opposing sniper towers. Collapse their high ground to eliminate their line-of-sight advantages."
-                 data-defense="Collect leftover blast remnants quickly to plug holes in your walkway. Re-building bridges constantly prevents your team from getting trapped in small dead ends.">
-                <img src="resources/image/section3.png" alt="Terrain Restructuring" class="tip-card-img">
-                <h3 class="tip-card-title minecraft-ten">Terrain Restructuring</h3>
-            </div>
-
-            <!-- CARD ITEM 4 -->
-            <div class="tip-card" 
-                 data-title="Bouncing & Carrom Shots"
-                 data-offense="Bank TNT charges off sidewalls to bypass front-facing enemy shields. Indirect hits catch turtling opponents completely off-guard."
-                 data-defense="Avoid standing directly next to sidewalls. Angle yourself near open spaces where ricocheting TNT cannot trap you against wall corners.">
-                <img src="resources/image/tnt.png" alt="Bouncing & Carrom Shots" class="tip-card-img">
-                <h3 class="tip-card-title minecraft-ten">Bouncing & Carrom Shots</h3>
-            </div>
-
-            <!-- CARD ITEM 5 -->
-            <div class="tip-card" 
-                 data-title="Overtime Void Hazards"
-                 data-offense="When the playable area shrinks, force opponents toward the edges using rapid low-charge TNT bursts to trigger instant knockbacks."
-                 data-defense="Save mobility gadgets exclusively for late game. Having a grapple or double-jump ready saves you when the ground beneath you collapses during overtime.">
-                <img src="resources/image/section1.png" alt="Overtime Void Hazards" class="tip-card-img">
-                <h3 class="tip-card-title minecraft-ten">Overtime Void Hazards</h3>
-            </div>
-
-            <!-- CARD ITEM 6 -->
-            <div class="tip-card" 
-                 data-title="Team Synergy & Coordination"
-                 data-offense="Coordinate with a teammate to fire dual shots simultaneously: one shot forces the enemy to move, while the second shot targets their escape path."
-                 data-defense="Assign one player as the dedicated 'Architect' to constantly rebuild cover while teammates focus on returning fire. A strong defense keeps the team alive longer.">
-                <img src="resources/image/section2.png" alt="Team Synergy & Coordination" class="tip-card-img">
-                <h3 class="tip-card-title minecraft-ten">Team Synergy</h3>
-            </div>
-
-            <!-- ADD NEW TIP CARDS HERE -->
 
         </div>
     </section>
 
-    <!-- Pop-up Modal Container -->
+    <!-- Pop-up Modal -->
     <div class="modal-backdrop" id="modal-backdrop">
         <div class="modal-container">
             <button class="modal-close-btn" id="modal-close">&times;</button>
             <h2 class="modal-title minecraft-ten" id="modal-title">Tip Title</h2>
-            <p class="modal-subtitle minecraft-five">Select a strategy mode below:</p>
+            <p class="modal-subtitle minecraft-five" id="modal-subtitle">Select a strategy mode below:</p>
 
-            <!-- Inner Layout Container -->
-            <div class="modal-body">
+            <div class="modal-body" id="modal-body">
                 
-                <!-- Option Buttons on the Left -->
-                <div class="tactics-toggle minecraft-five">
-                    <button class="tactic-btn" id="btn-offense">Offense</button>
-                    <button class="tactic-btn" id="btn-defense">Defense</button>
+                <!-- 3 Options (Centered by default, shifts left on click) -->
+                <div class="tactics-toggle minecraft-five" id="tactics-toggle">
+                    <button class="tactic-btn minecraft-ten" id="btn-offense">Offense</button>
+                    <button class="tactic-btn minecraft-ten" id="btn-defense">Defense</button>
+                    <button class="tactic-btn minecraft-ten" id="btn-survival">Survival</button>
                 </div>
 
-                <!-- Smooth Expandable Scrollable Box to the Right -->
+                <!-- Flexible Container Right -->
                 <div class="expandable-panel" id="expandable-panel">
                     <div class="panel-content-scroll minecraft-five" id="panel-text">
-                        <!-- Dynamic Text Appears Here -->
+                        <!-- Dynamic Containers rendered by JS -->
                     </div>
                 </div>
                 
@@ -443,14 +525,12 @@
         </div>
     </div>
 
-    <!-- Footer -->
     <footer class="footer minecraft-five">
         <p>A fanmade website for fun. &copy; 2026 by GeeTee_forSaken</p>
     </footer>
 
-    <!-- Scripts -->
     <script>
-        // --- Navigation Dropdown Script ---
+        // --- Navigation Script ---
         const menuToggle = document.getElementById('menu-toggle');
         const dropdownMenu = document.getElementById('dropdown-menu');
         const pageOverlay = document.getElementById('page-overlay');
@@ -463,30 +543,35 @@
         menuToggle.addEventListener('click', toggleMenu);
         pageOverlay.addEventListener('click', toggleMenu);
 
-        // --- Modal & Tactics Logic ---
+        // --- Modal Script ---
         const modalBackdrop = document.getElementById('modal-backdrop');
         const modalClose = document.getElementById('modal-close');
         const modalTitle = document.getElementById('modal-title');
+        const modalSubtitle = document.getElementById('modal-subtitle');
         
+        const tacticsToggle = document.getElementById('tactics-toggle');
         const btnOffense = document.getElementById('btn-offense');
         const btnDefense = document.getElementById('btn-defense');
+        const btnSurvival = document.getElementById('btn-survival');
         
         const expandablePanel = document.getElementById('expandable-panel');
         const panelText = document.getElementById('panel-text');
 
-        let currentOffenseText = '';
-        let currentDefenseText = '';
+        let currentOffenseData = null;
+        let currentDefenseData = null;
+        let currentSurvivalData = null;
 
-        // Open Modal when a card is clicked
+        // Open Modal
         document.querySelectorAll('.tip-card').forEach(card => {
             card.addEventListener('click', () => {
                 const title = card.getAttribute('data-title');
-                currentOffenseText = card.getAttribute('data-offense');
-                currentDefenseText = card.getAttribute('data-defense');
+                
+                // Parse JSON Data
+                currentOffenseData = JSON.parse(card.getAttribute('data-offense') || 'null');
+                currentDefenseData = JSON.parse(card.getAttribute('data-defense') || 'null');
+                currentSurvivalData = JSON.parse(card.getAttribute('data-survival') || 'null');
 
                 modalTitle.textContent = title;
-                
-                // Reset State
                 resetTactics();
                 modalBackdrop.classList.add('active');
             });
@@ -503,30 +588,77 @@
             if (e.target === modalBackdrop) closeModal();
         });
 
-        // Reset the panel without instantly clearing text to allow smooth closing transition
+        // Reset state back to initial centered layout
         function resetTactics() {
             btnOffense.classList.remove('active-offense');
             btnDefense.classList.remove('active-defense');
+            btnSurvival.classList.remove('active-survival');
+            
+            tacticsToggle.classList.remove('shifted');
             expandablePanel.classList.remove('expanded');
+            modalSubtitle.classList.remove('hidden');
         }
 
-        // Offense Click Event
-        btnOffense.addEventListener('click', () => {
-            btnDefense.classList.remove('active-defense');
-            btnOffense.classList.add('active-offense');
+        // Render function for building structured elements
+        function renderStrategyContent(data) {
+            panelText.innerHTML = ''; 
 
-            panelText.textContent = currentOffenseText;
-            expandablePanel.classList.add('expanded');
-        });
+            if (!data) return;
 
-        // Defense Click Event
-        btnDefense.addEventListener('click', () => {
+            // 1. Render Top Highlights Row (Circle Images)
+            if (data.highlights && data.highlights.length > 0) {
+                const highlightsBox = document.createElement('div');
+                highlightsBox.className = 'top-highlights-box';
+
+                data.highlights.forEach(imgSrc => {
+                    const img = document.createElement('img');
+                    img.src = imgSrc;
+                    img.alt = "Highlight Icon";
+                    img.className = 'circle-placeholder';
+                    highlightsBox.appendChild(img);
+                });
+
+                panelText.appendChild(highlightsBox);
+            }
+
+            // 2. Render Section Boxes
+            if (data.sections && data.sections.length > 0) {
+                data.sections.forEach(sec => {
+                    const secBox = document.createElement('div');
+                    secBox.className = 'section-box';
+
+                    secBox.innerHTML = `
+                        <div class="section-header">
+                            <img src="${sec.thumb}" alt="${sec.title}" class="square-thumbnail">
+                            <h4 class="section-title-text minecraft-ten">${sec.title}</h4>
+                        </div>
+                        <p class="section-body-text minecraft-five">${sec.text}</p>
+                    `;
+
+                    panelText.appendChild(secBox);
+                });
+            }
+        }
+
+        // Select Tactic Helper
+        function selectTactic(btn, activeClass, data) {
             btnOffense.classList.remove('active-offense');
-            btnDefense.classList.add('active-defense');
+            btnDefense.classList.remove('active-defense');
+            btnSurvival.classList.remove('active-survival');
 
-            panelText.textContent = currentDefenseText;
+            btn.classList.add(activeClass);
+            
+            // Shift toggle container to left & reveal content
+            tacticsToggle.classList.add('shifted');
+            modalSubtitle.classList.add('hidden');
+            renderStrategyContent(data);
             expandablePanel.classList.add('expanded');
-        });
+        }
+
+        // Option Button Clicks
+        btnOffense.addEventListener('click', () => selectTactic(btnOffense, 'active-offense', currentOffenseData));
+        btnDefense.addEventListener('click', () => selectTactic(btnDefense, 'active-defense', currentDefenseData));
+        btnSurvival.addEventListener('click', () => selectTactic(btnSurvival, 'active-survival', currentSurvivalData));
     </script>
 </body>
 </html>

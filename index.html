@@ -13,16 +13,18 @@
         .hero {
             height: 60vh;
             min-height: 400px;
-            background-color: #cccccc;
+            /* Added background image property */
+            background-image: url("resources/image/home.png");
             background-size: cover;
             background-position: center;
+            background-repeat: no-repeat;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
             padding: 2rem;
-            color: #222;
+            color: #fff; /* Changed to white so text stays readable over images */
         }
 
         .hero h1 {
@@ -32,6 +34,10 @@
 
         .hero p {
             font-size: 1.5rem;
+        }
+
+        .hero h1, .hero p {
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
         }
 
         /* --- Content Sections --- */
