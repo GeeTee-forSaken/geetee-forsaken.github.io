@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maps - Dynawiki</title>
+    
+    <link rel="stylesheet" href="../../style.css">
+    
+    <style>
+        /* --- Box Sizing Reset --- */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        /* --- Hero Header Section --- */
+        .hero {
+            height: 30vh;
+            min-height: 200px;
+            background-color: #8c32d2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            color: #fff;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* --- Content Section --- */
+        .content-section {
+            padding: 2rem 10%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: left;
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            color: #222;
+        }
+
+        /* --- Table of Contents --- */
+        .toc-list {
+            margin-bottom: 3rem;
+            padding-left: 1.5rem;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .toc-list a {
+            color: #0275d8;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .toc-list a:hover {
+            color: #01447e;
+            text-decoration: underline;
+        }
+
+        /* --- Map Content Box --- */
+        .map-box {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+        }
+
+        .map-title {
+            text-align: left;
+            font-size: 2rem;
+            margin-top: 0;
+            margin-bottom: 2rem;
+            color: #111;
+        }
+
+        .map-main-img {
+            display: block;
+            margin: 0 auto 2.5rem auto; /* Centers the image */
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            background-color: #e0e0e0;
+            object-fit: cover;
+        }
+
+        /* --- Content Row Variations --- */
+        .content-row {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .content-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .content-row.reverse {
+            flex-direction: row-reverse; /* Swaps image and text sides */
+        }
+
+        .content-text {
+            flex: 1;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #444;
+            margin: 0;
+        }
+
+        .content-img {
+            flex: 1;
+            max-width: 45%;
+            height: auto;
+            border-radius: 8px;
+            background-color: #e0e0e0;
+            object-fit: cover;
+        }
+
+        /* --- Responsive Layout --- */
+        @media (max-width: 768px) {
+            .content-row, .content-row.reverse {
+                flex-direction: column;
+            }
+            .content-img {
+                max-width: 100%;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page-overlay" id="page-overlay"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar minecraft-five">
+        <button class="hamburger-btn" id="menu-toggle" aria-label="Toggle navigation">
+            <span></span><span></span><span></span>
+        </button>
+        <h2>Dynawiki</h2>
+        <div class="spacer"></div>
+    </nav>
+
+    <div class="dropdown-menu minecraft-five" id="dropdown-menu">
+        <a href="../index.html">Home</a>
+        <a href="../community.html">Community</a>
+        <a href="../statistics.html">Statistics</a>
+        <a href="../about-us.html">About Us</a>
+        <a href="https://mccisland.net" target="_blank">MCC Island</a>
+    </div>
+
+    <!-- Replaced Title -->
+    <header class="hero minecraft-ten">
+        <h1>Maps</h1>
+        <p class="minecraft-five">Explore topographies, points of interest, and field structures</p>
+    </header>
+
+    <main class="content-section bg-white">
+        
+        <!-- 1. About this page -->
+        <section id="about">
+            <h2 class="section-title minecraft-ten">About this page</h2>
+            <p class="minecraft-five" style="margin-bottom: 3rem; line-height: 1.6; color: #444;">
+                Welcome to the Maps directory. This page serves as a comprehensive guide to all battlegrounds available in the game. Here you will find detailed overviews of layouts, strategic chokepoints, and environmental hazards to help you master the terrain.
+            </p>
+        </section>
+
+        <!-- 2. Table of content -->
+        <section id="toc">
+            <h2 class="section-title minecraft-ten">Table of Contents</h2>
+            <ol class="toc-list minecraft-five">
+                <li><a href="#about">About this page</a></li>
+                <li><a href="#map-bestwalls">Map 1: Armada</a></li>
+                <!-- Add new links here when you duplicate the content box -->
+            </ol>
+        </section>
+
+        <!-- 3. Content box (Expandable by copy & paste) -->
+            <!-- Best Walls-->
+                <div class="map-box" id="map-bestwalls">
+                    <!-- Main Title Top Left -->
+                    <h3 class="map-title minecraft-ten">Armada</h3>
+                    
+                    <!-- Image Aligned to Middle -->
+                    <img src="../resources/image/articles/tips-and-tricks/map/bestwalls.png" alt="Armada Main View" class="map-main-img">
+
+                    <!-- 3.a. Paragraph only -->
+                    <div class="content-row">
+                        <p class="content-text minecraft-five">
+                            <strong>Overview:</strong> The map consists of a layer of solid blocks on the bottom levels, followed by hidden TNT midway through the map, then falling concrete powder as well all levitation blocks on the top levels.
+                        </p>
+                    </div>
+
+                    <div class="content-row">
+                        <p class="content-text minecraft-five">
+                            <strong>Offense:</strong> A good strategy for this map is to shoot TNT at the midway point where the hidden TNT is. This will usually take two TNT per side of the map. If a player falls to this mid level, it is best to stick that player with TNT so that they can do more damage to their own map and accidentally set off the hidden TNT. Getting rid of the bottom layer of solid blocks will make it so that the opposite team does not have solid ground to build on.
+                        </p>
+                    </div>
+
+                    <div class="content-row">
+                        <p class="content-text minecraft-five">
+                            <strong>Defense:</strong> Getting stuck at the bottom of the map is a good way to get your map blown up and to set off the hidden TNT. However, if you are good at parkour and are good at dodging TNT it is the best source of finding repair blocks. Use those blocks to pillar up or build bridges to support your team or save them until the end of the game to ensure you do not fall into the void.
+                        </p>
+                    </div>
+
+                    <div class="content-row">
+                        <p class="content-text minecraft-five">
+                            <strong>Survival:</strong> Most of this map is made up of falling blocks. Be careful not to be standing on falling blocks if the bottom solid blocks get blown up. You will fall into the void. Beware when bridging on this map or when running down at the bottom because rockets will blast you off and if it is towards the end of the map, you will not have anything to land on.
+                        </p>
+                    </div>
+
+                    <!--
+                    3.b. Image on left and paragraph on right
+                    <div class="content-row">
+                        <img src="../resources/image/section1.png" alt="Left Side Image" class="content-img">
+                        <p class="content-text minecraft-five">
+                            <strong>Strategic Point A:</strong> This layout features an image on the left and a paragraph on the right. You can use this space to highlight specific points of interest, hidden routes, or defensive setups native to this side of the map.
+                        </p>
+                    </div>
+
+                    3.c. Paragraph on left and image on right
+                    <div class="content-row reverse">
+                        <img src="../resources/image/section2.png" alt="Right Side Image" class="content-img">
+                        <p class="content-text minecraft-five">
+                            <strong>Strategic Point B:</strong> This layout reverses the flow, placing the paragraph on the left and the image on the right. Alternating these layouts keeps the article visually engaging as readers scroll through your guide.
+                        </p>
+                    </div>
+                    -->
+                </div>
+            <!-- End of Content Box (Copy from <div class="map-box"> to here to duplicate) -->
+
+    </main>
+
+    <footer class="footer minecraft-five">
+        <p>A fanmade website for fun. &copy; 2026 by GeeTee_forSaken</p>
+    </footer>
+
+    <script>
+        // --- Navigation Script ---
+        const menuToggle = document.getElementById('menu-toggle');
+        const dropdownMenu = document.getElementById('dropdown-menu');
+        const pageOverlay = document.getElementById('page-overlay');
+
+        function toggleMenu() {
+            dropdownMenu.classList.toggle('active');
+            pageOverlay.classList.toggle('active');
+        }
+
+        menuToggle.addEventListener('click', toggleMenu);
+        pageOverlay.addEventListener('click', toggleMenu);
+    </script>
+</body>
+</html>
