@@ -745,7 +745,7 @@
                         if (Math.hypot(this.vx, this.vy) < 0.2 && (this.posY + BOX_SIZE >= window.innerHeight - 5)) {
                             setMascotState('idle'); 
                         } else if (this.vy > 0.5 && currentMascotState !== 'fall') {
-                            setMascotState('fall'); 
+                            setMascotState('idle'); 
                         }
                     }
 
