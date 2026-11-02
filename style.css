@@ -39,6 +39,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 1rem 2rem;
+    min-height: 80px; /* ADD THIS: Forces the navbar to be taller than the 80px sprite */
     background-color: #fff;
     border-bottom: 1px solid #eee;
     position: sticky;

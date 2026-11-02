@@ -1,0 +1,514 @@
+
+    <!-- ========================================== -->
+    <!-- MESSAGE: MASCOT & TNT INTERACTION FEATURE  -->
+    <!-- ========================================== -->
+    <style>
+        /* --- Interactive Physics Objects (TNT & Mascot) --- */
+        .physics-box {
+            position: fixed;
+            top: 0;
+            left: 0;
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+            z-index: 1000;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        }
+
+        #mascot-physics {
+            width: 106px; /* Mascot scaled up independently */
+            height: 106px;
+        }
+
+        #tnt-physics {
+            width: 48px; /* TNT stays small */
+            height: 48px;
+            z-index: 1001; /* Ensure TNT is layered above the mascot */
+        }
+
+        .physics-box img {
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        .physics-box:active {
+            cursor: grabbing;
+        }
+
+        /* Mascot Spin Animation */
+        @keyframes mascot-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .spinning-sprite {
+            animation: mascot-spin 0.3s linear infinite;
+        }
+    </style>
+
+    <!-- Interactive Elements: Mascot and TNT -->
+    <div id="mascot-physics" class="physics-box">
+        <img id="mascot-img" src="resources/image/mascot/oc1/idle.png" alt="Mascot Texture">
+    </div>
+
+    <div id="tnt-physics" class="physics-box">
+        <img src="resources/image/tnt.png" alt="TNT Texture">
+    </div>
+
+    <!-- Script 3: Interactive Physics -->
+    <script>
+        // ==========================================
+        // MASCOT & ASSETS CONFIGURATION (ALL STATES)
+        // ==========================================
+        
+        // Define your complete variant sets here. 
+        // Each index represents a different style/skin of your mascot.
+        const MASCOT_VARIANT_SETS = [
+            {
+                drag:  'resources/image/mascot/oc1/drag.png',    
+                fall:  'resources/image/mascot/oc1/fall.png',    
+                idle:  'resources/image/mascot/oc1/idle.png',    
+                swing: 'resources/image/mascot/oc1/swing.png',   
+                land:  'resources/image/mascot/oc1/land.png'     
+            },
+            {
+                drag:  'resources/image/mascot/belle/drag.png',    
+                fall:  'resources/image/mascot/belle/fall.png',    
+                idle:  'resources/image/mascot/belle/idle.png',    
+                swing: 'resources/image/mascot/belle/swing.png',   
+                land:  'resources/image/mascot/belle/land.png'     
+            },
+            {
+                drag:  'resources/image/mascot/oc1/drag.png',    
+                fall:  'resources/image/mascot/oc1/fall.png',    
+                idle:  'resources/image/mascot/oc1/idle.png',    
+                swing: 'resources/image/mascot/oc1/swing.png',   
+                land:  'resources/image/mascot/oc1/land.png'     
+            }
+        ];
+
+        // Active sprites object that the game will read from dynamically
+        let activeMascotSprites = { ...MASCOT_VARIANT_SETS[0] };
+
+        const EXPLOSION_SRC = 'resources/image/explosion.png';
+        const MASCOT_SIZE = 106;
+        const TNT_SIZE = 48;
+        const HARD_SWING_THRESHOLD = 16; 
+
+        const mascotImg = document.getElementById('mascot-img');
+        let landingTimeout = null;
+        let currentMascotState = 'idle';
+
+        // Randomly picks a complete set of variant sprites upon respawn
+        function randomizeMascotVariant() {
+            if (MASCOT_VARIANT_SETS && MASCOT_VARIANT_SETS.length > 0) {
+                const randomIndex = Math.floor(Math.random() * MASCOT_VARIANT_SETS.length);
+                activeMascotSprites = { ...MASCOT_VARIANT_SETS[randomIndex] };
+            }
+        }
+
+        function setMascotState(state) {
+            if (currentMascotState === state && state !== 'land') return;
+            currentMascotState = state;
+
+            if (state === 'swing') {
+                mascotImg.classList.add('spinning-sprite');
+            } else {
+                mascotImg.classList.remove('spinning-sprite');
+            }
+
+            if (activeMascotSprites[state]) {
+                mascotImg.src = activeMascotSprites[state];
+            }
+        }
+
+        function triggerLandingSprite() {
+            setMascotState('land'); 
+            if (landingTimeout) clearTimeout(landingTimeout);
+            
+            landingTimeout = setTimeout(() => {
+                if (currentMascotState === 'land') {
+                    setMascotState('idle'); 
+                }
+            }, 250);
+        }
+
+        // Spawn transient explosion PNG overlay at specific (x, y) - scales dynamically based on size
+        function triggerExplosion(x, y, baseSize, duration = 200) {
+            const explosionSize = baseSize * 3.0; // 200% larger explosion size based on the entity's size
+            const explosion = document.createElement('img');
+            explosion.src = EXPLOSION_SRC;
+            explosion.style.position = 'fixed';
+            // Center the larger explosion around target (x, y)
+            explosion.style.left = `${x - (explosionSize - baseSize) / 2}px`;
+            explosion.style.top = `${y - (explosionSize - baseSize) / 2}px`;
+            explosion.style.width = `${explosionSize}px`;
+            explosion.style.height = `${explosionSize}px`;
+            explosion.style.zIndex = '1002';
+            explosion.style.pointerEvents = 'none';
+            explosion.style.imageRendering = 'pixelated';
+
+            document.body.appendChild(explosion);
+
+            setTimeout(() => {
+                if (explosion.parentNode) {
+                    explosion.parentNode.removeChild(explosion);
+                }
+            }, duration);
+        }
+
+        // ==========================================
+        // REUSABLE PHYSICS ENTITY CLASS
+        // ==========================================
+        class PhysicsEntity {
+            constructor(element, initialX, initialY, size, isMascot = false) {
+                this.element = element;
+                this.size = size;
+                this.isMascot = isMascot;
+                
+                this.posX = initialX;
+                this.posY = initialY;
+                this.targetX = initialX; 
+                this.targetY = initialY;
+
+                this.vx = 0;
+                this.vy = 0;
+
+                this.isDragging = false;
+                this.hasBeenDragged = false; 
+                this.prevMouseX = 0;
+                this.prevMouseY = 0;
+
+                this.isCarromMode = false;
+                this.bounceCount = 0;
+                this.collisionsDisabled = false;
+                this.isRespawning = false;
+                this.isStuck = false; 
+
+                this.gravity = 0;
+                this.friction = 0.985;
+
+                this.initEvents();
+            }
+
+            initEvents() {
+                this.element.addEventListener('pointerdown', (e) => {
+                    if (this.isRespawning || this.isStuck) return;
+                    this.isDragging = true;
+                    this.hasBeenDragged = true; 
+                    this.vx = 0;
+                    this.vy = 0;
+                    this.bounceCount = 0;
+                    this.collisionsDisabled = false;
+                    this.isCarromMode = false;
+
+                    this.prevMouseX = e.clientX;
+                    this.prevMouseY = e.clientY;
+                    this.element.setPointerCapture(e.pointerId);
+
+                    if (this.isMascot) {
+                        setMascotState('drag'); 
+                    }
+                });
+
+                this.element.addEventListener('pointermove', (e) => {
+                    if (!this.isDragging) return;
+
+                    this.vx = e.clientX - this.prevMouseX;
+                    this.vy = e.clientY - this.prevMouseY;
+
+                    this.posX = e.clientX - this.size / 2;
+                    this.posY = e.clientY - this.size / 2;
+
+                    this.prevMouseX = e.clientX;
+                    this.prevMouseY = e.clientY;
+                });
+
+                this.element.addEventListener('pointerup', (e) => {
+                    if (!this.isDragging) return;
+                    this.isDragging = false;
+                    this.element.releasePointerCapture(e.pointerId);
+
+                    const throwSpeed = Math.hypot(this.vx, this.vy);
+
+                    if (throwSpeed >= HARD_SWING_THRESHOLD) {
+                        this.isCarromMode = true;
+                        this.gravity = 0;
+                        this.friction = 1.0;
+
+                        if (this.isMascot) {
+                            setMascotState('swing'); 
+                        }
+                    } else {
+                        this.isCarromMode = false;
+                        this.gravity = 0.9;
+                        this.friction = 0.98;
+
+                        if (this.isMascot) {
+                            setMascotState('fall'); 
+                        }
+                    }
+                });
+            }
+
+            handleCollisions() {
+                const width = window.innerWidth;
+                const height = window.innerHeight;
+
+                if (this.isCarromMode) {
+                    let hitWall = false;
+                    let impactX = this.posX;
+                    let impactY = this.posY;
+
+                    if (this.posY + this.size > height) {
+                        this.posY = height - this.size;
+                        this.vy *= -1;
+                        hitWall = true;
+                        impactY = height - this.size;
+                    } else if (this.posY < 0) {
+                        this.posY = 0;
+                        this.vy *= -1;
+                        hitWall = true;
+                        impactY = 0;
+                    }
+
+                    if (this.posX + this.size > width) {
+                        this.posX = width - this.size;
+                        this.vx *= -1;
+                        hitWall = true;
+                        impactX = width - this.size;
+                    } else if (this.posX < 0) {
+                        this.posX = 0;
+                        this.vx *= -1;
+                        hitWall = true;
+                        impactX = 0;
+                    }
+
+                    if (hitWall) {
+                        this.bounceCount++;
+                        
+                        if (!this.isMascot) {
+                            if (this.bounceCount === 10) {
+                                // 1. Trigger enlarged explosion on 10th bounce impact
+                                triggerExplosion(impactX, impactY, this.size, 200);
+
+                                // 2. Stop movement entirely
+                                this.vx = 0;
+                                this.vy = 0;
+                                this.collisionsDisabled = true;
+
+                                // 3. Trigger sky drop respawn
+                                this.triggerSkyRespawn();
+                            }
+                        } else if (this.isMascot && this.bounceCount >= 10) {
+                            this.collisionsDisabled = true;
+                        }
+                    }
+                } else {
+                    if (this.posY + this.size > height) {
+                        this.posY = height - this.size;
+                        
+                        if (this.isMascot && Math.abs(this.vy) > 1.5) {
+                            triggerLandingSprite(); 
+                        }
+                        
+                        this.vy *= -0.4; 
+                        this.vx *= 0.8;  
+                    }
+
+                    if (this.posY < 0) {
+                        this.posY = 0;
+                        this.vy *= -0.5;
+                    }
+
+                    if (this.posX + this.size > width) {
+                        this.posX = width - this.size;
+                        this.vx *= -0.6;
+                    } else if (this.posX < 0) {
+                        this.posX = 0;
+                        this.vx *= -0.6;
+                    }
+                }
+            }
+
+            triggerSkyRespawn() {
+                this.isRespawning = true;
+                this.vx = 0;
+                this.vy = 0;
+                this.isCarromMode = false;
+
+                // Hide element immediately so it doesn't linger at the border during delay
+                this.element.style.display = 'none';
+
+                this.posX = this.targetX;
+                this.posY = -120;
+
+                if (this.isMascot) {
+                    randomizeMascotVariant(); // <-- Randomizes the variant set here upon respawn!
+                    setMascotState('fall'); 
+                }
+
+                let fallSpeed = 0;
+                const dropGravity = 0.8;
+
+                const animateDrop = () => {
+                    fallSpeed += dropGravity;
+                    this.posY += fallSpeed;
+
+                    if (this.posY >= this.targetY) {
+                        this.posY = this.targetY;
+                        this.bounceCount = 0;
+                        this.collisionsDisabled = false;
+                        this.isRespawning = false;
+                        this.gravity = 0;
+                        this.friction = 0.985;
+
+                        if (this.isMascot) {
+                            triggerLandingSprite(); 
+                        }
+                        return;
+                    }
+
+                    this.element.style.transform = `translate3d(${this.posX}px, ${this.posY}px, 0)`;
+                    requestAnimationFrame(animateDrop);
+                };
+
+                setTimeout(() => {
+                    // Ensure element becomes visible ONLY when it drops from the sky
+                    this.element.style.display = 'block';
+                    requestAnimationFrame(animateDrop);
+                }, 500);
+            }
+
+            update() {
+                if (!this.isDragging && !this.isRespawning && !this.isStuck) {
+                    this.vy += this.gravity;
+                    this.vx *= this.friction;
+                    this.vy *= this.friction;
+
+                    this.posX += this.vx;
+                    this.posY += this.vy;
+
+                    if (this.isMascot && !this.isCarromMode && currentMascotState !== 'land') {
+                        if (Math.hypot(this.vx, this.vy) < 0.2 && (this.posY + this.size >= window.innerHeight - 5)) {
+                            setMascotState('idle'); 
+                        } else if (this.vy > 0.5 && currentMascotState !== 'fall') {
+                            setMascotState('idle'); 
+                        }
+                    }
+
+                    if (!this.collisionsDisabled) {
+                        this.handleCollisions();
+                    } else {
+                        const isOffScreen = this.posX < -120 || this.posX > window.innerWidth + 120 ||
+                                            this.posY < -120 || this.posY > window.innerHeight + 120;
+                        if (isOffScreen) {
+                            if (this.isMascot && isMascotComboLaunchActive) {
+                                isMascotComboLaunchActive = false;
+                                mascotEntity.triggerSkyRespawn();
+                                tntEntity.triggerSkyRespawn();
+                            } else if (!isMascotComboLaunchActive) {
+                                this.triggerSkyRespawn();
+                            }
+                        }
+                    }
+                }
+
+                // Transform update remains disabled while respawning delay is active, preventing visual glitches
+                if (!this.isRespawning) {
+                    this.element.style.transform = `translate3d(${this.posX}px, ${this.posY}px, 0)`;
+                }
+            }
+        }
+
+        // ==========================================
+        // INITIALIZATION & CUSTOM COLLISION INTERACTION
+        // ==========================================
+        const tntElem = document.getElementById('tnt-physics');
+        const mascotElem = document.getElementById('mascot-physics');
+
+        const tntInitialX = window.innerWidth - TNT_SIZE - 40;
+        const mascotInitialX = window.innerWidth - MASCOT_SIZE - TNT_SIZE - 55; 
+
+        const tntEntity = new PhysicsEntity(tntElem, tntInitialX, 26, TNT_SIZE, false);
+        const mascotEntity = new PhysicsEntity(mascotElem, mascotInitialX, 10, MASCOT_SIZE, true);
+
+        let isTNTStuckToMascot = false;
+        let isMascotComboLaunchActive = false;
+
+        // Checks collision between TNT and Mascot
+        function checkTNTAndMascotInteraction() {
+            if (isTNTStuckToMascot || mascotEntity.isStuck) return;
+
+            const isMascotOnGround = mascotEntity.posY + mascotEntity.size >= window.innerHeight - 5;
+            const isTNTSwung = tntEntity.isCarromMode || Math.hypot(tntEntity.vx, tntEntity.vy) > 10;
+
+            if (mascotEntity.hasBeenDragged && isMascotOnGround && isTNTSwung) {
+                // Collision Detection using Mascot's size metric to create an adequate hitbox
+                const hit = Math.abs(tntEntity.posX - mascotEntity.posX) < mascotEntity.size * 0.8 &&
+                            Math.abs(tntEntity.posY - mascotEntity.posY) < mascotEntity.size * 0.8;
+
+                if (hit) {
+                    // --- 1. STICK TNT TO MASCOT HEAD ---
+                    isTNTStuckToMascot = true;
+                    mascotEntity.isStuck = true;
+                    
+                    // Freeze TNT motion
+                    tntEntity.vx = 0;
+                    tntEntity.vy = 0;
+                    tntEntity.isCarromMode = false;
+
+                    // --- 2. DELAY, EXPLODE & LAUNCH MASCOT ---
+                    setTimeout(() => {
+                        // Trigger enlarged explosion right at the stuck TNT/head position based on TNT's size
+                        triggerExplosion(tntEntity.posX, tntEntity.posY, tntEntity.size, 250);
+
+                        // Immediately hide TNT
+                        isTNTStuckToMascot = false;
+                        tntElem.style.display = 'none';
+
+                        // Track active combo launch state
+                        isMascotComboLaunchActive = true;
+
+                        // Launch Mascot in Hard Swing / Carrom mode
+                        mascotEntity.isStuck = false;
+                        mascotEntity.isCarromMode = true;
+                        mascotEntity.gravity = 0;
+                        mascotEntity.friction = 1.0;
+                        mascotEntity.bounceCount = 0;
+                        mascotEntity.collisionsDisabled = false;
+
+                        // Random direction launch vector
+                        const launchDirection = Math.random() > 0.5 ? 1 : -1;
+                        mascotEntity.vx = launchDirection * 18;
+                        mascotEntity.vy = -18;
+
+                        // Set Mascot state to Spinning swing
+                        setMascotState('swing');
+                    }, 1200); 
+                }
+            }
+        }
+
+        function mainPhysicsLoop() {
+            // Anchor TNT to mascot head while stuck
+            if (isTNTStuckToMascot) {
+                // Keep the visual offset proportional to the mascot's size
+                tntEntity.posX = mascotEntity.posX + (mascotEntity.size / 4);
+                tntEntity.posY = mascotEntity.posY - (mascotEntity.size * 0.7);
+                tntElem.style.transform = `translate3d(${tntEntity.posX}px, ${tntEntity.posY}px, 0)`;
+            }
+
+            tntEntity.update();
+            mascotEntity.update();
+
+            checkTNTAndMascotInteraction();
+
+            requestAnimationFrame(mainPhysicsLoop);
+        }
+
+        mainPhysicsLoop();
+    </script>

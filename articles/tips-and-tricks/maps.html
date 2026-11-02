@@ -34,7 +34,7 @@
 
         /* --- Content Section --- */
         .content-section {
-            padding: 2rem 10%;
+            padding: 2rem 5%;
             max-width: 1200px;
             margin: 0 auto;
         }
@@ -46,23 +46,62 @@
             color: #222;
         }
 
-        /* --- Table of Contents --- */
-        .toc-list {
+        /* --- Horizontal Scrollable Carousel Gallery --- */
+        .carousel-wrapper {
+            position: relative;
             margin-bottom: 3rem;
-            padding-left: 1.5rem;
-            font-size: 1.1rem;
-            line-height: 1.8;
         }
 
-        .toc-list a {
-            color: #0275d8;
-            text-decoration: none;
-            transition: color 0.2s ease;
+        .carousel-container {
+            display: flex;
+            gap: 2rem;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            padding: 2rem 1rem;
+            align-items: center;
+            scrollbar-width: thin;
+            scrollbar-color: #8c32d2 #e0e0e0;
         }
 
-        .toc-list a:hover {
-            color: #01447e;
-            text-decoration: underline;
+        .carousel-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .carousel-container::-webkit-scrollbar-thumb {
+            background-color: #8c32d2;
+            border-radius: 4px;
+        }
+
+        .carousel-item {
+            flex: 0 0 280px;
+            height: 180px;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            scroll-snap-align: center;
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            opacity: 0.5;
+            transform: scale(0.85);
+            border: 3px solid transparent;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            background-color: #e0e0e0;
+            position: relative; /* Allows text absolute positioning inside thumbnail */
+        }
+
+        .carousel-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none;
+        }
+
+        /* Highlighted / Active State for Carousel Item */
+        .carousel-item.active {
+            opacity: 1;
+            transform: scale(1.05);
+            border-color: #8c32d2;
+            box-shadow: 0 10px 25px rgba(140, 50, 210, 0.3);
+            z-index: 2;
         }
 
         /* --- Map Content Box --- */
@@ -73,6 +112,12 @@
             padding: 2.5rem;
             margin-bottom: 3rem;
             box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .map-title {
@@ -85,11 +130,8 @@
 
         .map-main-img {
             display: block;
-            margin: 0 auto 2.5rem auto; /* Centers the image */
-            max-width: 100%;
+            width: 100%;
             height: auto;
-            border-radius: 8px;
-            background-color: #e0e0e0;
             object-fit: cover;
         }
 
@@ -105,10 +147,6 @@
             margin-bottom: 0;
         }
 
-        .content-row.reverse {
-            flex-direction: row-reverse; /* Swaps image and text sides */
-        }
-
         .content-text {
             flex: 1;
             font-size: 1rem;
@@ -117,24 +155,45 @@
             margin: 0;
         }
 
-        .content-img {
-            flex: 1;
-            max-width: 45%;
-            height: auto;
-            border-radius: 8px;
-            background-color: #e0e0e0;
-            object-fit: cover;
-        }
-
         /* --- Responsive Layout --- */
         @media (max-width: 768px) {
-            .content-row, .content-row.reverse {
+            .content-row {
                 flex-direction: column;
             }
-            .content-img {
-                max-width: 100%;
-                width: 100%;
+            .carousel-item {
+                flex: 0 0 220px;
+                height: 140px;
             }
+        }
+
+        /* --- Image Container with Overlay --- */
+        .image-container {
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 2.5rem;
+            background-color: #e0e0e0;
+        }
+
+        /* --- Overlay Text Styling (Main & Thumbnails) --- */
+        .image-overlay-text {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0));
+            color: #fff;
+            margin: 0;
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Smaller text font adjustment specifically for carousel thumbnail cards */
+        .carousel-item .image-overlay-text {
+            font-size: 1.1rem;
+            padding: 0.75rem 1rem;
         }
     </style>
 </head>
@@ -159,7 +218,7 @@
         <a href="https://mccisland.net" target="_blank">MCC Island</a>
     </div>
 
-    <!-- Replaced Title -->
+    <!-- Hero Header -->
     <header class="hero minecraft-ten">
         <h1>Maps</h1>
         <p class="minecraft-five">Explore topographies, points of interest, and field structures</p>
@@ -171,78 +230,70 @@
         <section id="about">
             <h2 class="section-title minecraft-ten">About this page</h2>
             <p class="minecraft-five" style="margin-bottom: 3rem; line-height: 1.6; color: #444;">
-                Welcome to the Maps directory. This page serves as a comprehensive guide to all battlegrounds available in the game. Here you will find detailed overviews of layouts, strategic chokepoints, and environmental hazards to help you master the terrain.
+                Welcome to the Maps directory. This page serves as a comprehensive guide to all battlegrounds available in the game. Here you will find detailed overviews of layouts, strategic chokepoints, and environmental hazards to help you master the terrain[cite: 1].
             </p>
         </section>
 
-        <!-- 2. Table of content -->
-        <section id="toc">
-            <h2 class="section-title minecraft-ten">Table of Contents</h2>
-            <ol class="toc-list minecraft-five">
-                <li><a href="#about">About this page</a></li>
-                <li><a href="#map-bestwalls">Map 1: Best Walls</a></li>
-                <!-- Add new links here when you duplicate the content box -->
-            </ol>
+        <!-- 2. Horizontal Scrollable Map Gallery -->
+        <section id="map-gallery">
+            <h2 class="section-title minecraft-ten">Select a Map</h2>
+            <div class="carousel-wrapper">
+                <div class="carousel-container" id="carousel-container">
+                    <!-- Map 1 Thumbnail -->
+                    <div class="carousel-item active" data-map="anchored">
+                        <img src="../../resources/image/articles/tips-and-tricks/map/anchored.png" alt="Anchored Thumbnail">
+                        <h3 class="image-overlay-text minecraft-ten">Anchored</h3>
+                    </div>
+                    <!-- Map 2 Thumbnail -->
+                    <div class="carousel-item" data-map="armada">
+                        <img src="../../resources/image/articles/tips-and-tricks/map/armada.png" alt="Armada Thumbnail">
+                        <h3 class="image-overlay-text minecraft-ten">Armada</h3>
+                    </div>
+                    <!-- Map 3 Thumbnail -->
+                    <div class="carousel-item" data-map="battlement">
+                        <img src="../../resources/image/articles/tips-and-tricks/map/battlement.png" alt="Battlement Thumbnail">
+                        <h3 class="image-overlay-text minecraft-ten">Battlement</h3>
+                    </div>
+                    <!-- Map 4 Thumbnail -->
+                    <div class="carousel-item" data-map="bestwalls">
+                        <img src="../../resources/image/articles/tips-and-tricks/map/bombardment.png" alt="Bombardment Thumbnail">
+                        <h3 class="image-overlay-text minecraft-ten">Bombardment</h3>
+                    </div>
+                    <!-- Map 5 Thumbnail -->
+                    <div class="carousel-item" data-map="cauldron">
+                        <img src="../../resources/image/articles/tips-and-tricks/map/cauldron.png" alt="Cauldron Thumbnail">
+                        <h3 class="image-overlay-text minecraft-ten">Cauldron</h3>
+                    </div>
+                    <!-- Map 6 Thumbnail -->
+                    <div class="carousel-item" data-map="chessboard">
+                        <img src="../../resources/image/articles/tips-and-tricks/map/chessboard.png" alt="Chessboard Thumbnail">
+                        <h3 class="image-overlay-text minecraft-ten">Chessboard</h3>
+                    </div>
+                </div>
+            </div>
         </section>
 
-        <!-- 3. Content box (Expandable by copy & paste) -->
-            <!-- Best Walls-->
-                <div class="map-box" id="map-bestwalls">
-                    <!-- Main Title Top Left -->
-                    <h3 class="map-title minecraft-ten">Best Walls</h3>
-                    
-                    <!-- Image Aligned to Middle -->
-                    <img src="../resources/image/articles/tips-and-tricks/map/bestwalls.png" alt="Armada Main View" class="map-main-img">
-
-                    <!-- 3.a. Paragraph only -->
-                    <div class="content-row">
-                        <p class="content-text minecraft-five">
-                            <strong>Overview:</strong> The map consists of a layer of solid blocks on the bottom levels, followed by hidden TNT midway through the map, then falling concrete powder as well all levitation blocks on the top levels.
-                        </p>
-                    </div>
-
-                    <div class="content-row">
-                        <p class="content-text minecraft-five">
-                            <strong>Offense:</strong> A good strategy for this map is to shoot TNT at the midway point where the hidden TNT is. This will usually take two TNT per side of the map. If a player falls to this mid level, it is best to stick that player with TNT so that they can do more damage to their own map and accidentally set off the hidden TNT. Getting rid of the bottom layer of solid blocks will make it so that the opposite team does not have solid ground to build on.
-                        </p>
-                    </div>
-
-                    <div class="content-row">
-                        <p class="content-text minecraft-five">
-                            <strong>Defense:</strong> Getting stuck at the bottom of the map is a good way to get your map blown up and to set off the hidden TNT. However, if you are good at parkour and are good at dodging TNT it is the best source of finding repair blocks. Use those blocks to pillar up or build bridges to support your team or save them until the end of the game to ensure you do not fall into the void.
-                        </p>
-                    </div>
-
-                    <div class="content-row">
-                        <p class="content-text minecraft-five">
-                            <strong>Survival:</strong> Most of this map is made up of falling blocks. Be careful not to be standing on falling blocks if the bottom solid blocks get blown up. You will fall into the void. Beware when bridging on this map or when running down at the bottom because rockets will blast you off and if it is towards the end of the map, you will not have anything to land on.
-                        </p>
-                    </div>
-
-                    <!--
-                    3.b. Image on left and paragraph on right
-                    <div class="content-row">
-                        <img src="../resources/image/section1.png" alt="Left Side Image" class="content-img">
-                        <p class="content-text minecraft-five">
-                            <strong>Strategic Point A:</strong> This layout features an image on the left and a paragraph on the right. You can use this space to highlight specific points of interest, hidden routes, or defensive setups native to this side of the map.
-                        </p>
-                    </div>
-
-                    3.c. Paragraph on left and image on right
-                    <div class="content-row reverse">
-                        <img src="../resources/image/section2.png" alt="Right Side Image" class="content-img">
-                        <p class="content-text minecraft-five">
-                            <strong>Strategic Point B:</strong> This layout reverses the flow, placing the paragraph on the left and the image on the right. Alternating these layouts keeps the article visually engaging as readers scroll through your guide.
-                        </p>
-                    </div>
-                    -->
+        <!-- 3. Dynamic Map Content Box Display Area -->
+        <div class="map-box" id="active-map-box">
+            <div id="map-content-display">
+                <!-- Default content populated initially -->
+                <div class="image-container">
+                    <img src="../../resources/image/articles/tips-and-tricks/map/anchored.png" alt="Anchored Main View" class="map-main-img">
+                    <h3 class="image-overlay-text minecraft-ten">Anchored</h3>
                 </div>
-            <!-- End of Content Box (Copy from <div class="map-box"> to here to duplicate) -->
+
+                <div class="content-row">
+                    <p class="content-text minecraft-five">
+                        <strong>Overview:</strong> Welcome to Anchored. Master the layout, utilize strategic chokepoints, and navigate environmental hazards carefully[cite: 1].
+                    </p>
+                </div>
+            </div>
+        </div>
 
     </main>
 
     <footer class="footer minecraft-five">
-        <p>A fanmade website for fun. &copy; 2026 by GeeTee_forSaken</p>
+        <p>A fanmade website for fun. &copy; 2026 by GeeTee_forSaken[cite: 1]</p>
     </footer>
 
     <script>
@@ -258,6 +309,115 @@
 
         menuToggle.addEventListener('click', toggleMenu);
         pageOverlay.addEventListener('click', toggleMenu);
+
+        // --- Interactive Carousel & Dynamic Content Switcher ---
+        const carouselContainer = document.getElementById('carousel-container');
+        const carouselItems = document.querySelectorAll('.carousel-item');
+        const contentDisplay = document.getElementById('map-content-display');
+
+        // Map data registry including thumbnails with text overlays
+        const mapData = {
+            "anchored": `
+                <div class="image-container">
+                    <img src="../../resources/image/articles/tips-and-tricks/map/anchored.png" alt="Anchored Main View" class="map-main-img">
+                    <h3 class="image-overlay-text minecraft-ten">Anchored</h3>
+                </div>
+                <div class="content-row">
+                    <p class="content-text minecraft-five"><strong>Overview:</strong> Welcome to Anchored. Master the layout, utilize strategic chokepoints, and navigate environmental hazards carefully[cite: 1].</p>
+                </div>
+            `,
+            "armada": `
+                <div class="image-container">
+                    <img src="../../resources/image/articles/tips-and-tricks/map/armada.png" alt="Armada Main View" class="map-main-img">
+                    <h3 class="image-overlay-text minecraft-ten">Armada</h3>
+                </div>
+                <div class="content-row">
+                    <p class="content-text minecraft-five"><strong>Overview:</strong> This is the layout for Armada. Plan your movements and team positioning around the naval-themed terrain[cite: 1].</p>
+                </div>
+            `,
+            "battlement": `
+                <div class="image-container">
+                    <img src="../../resources/image/articles/tips-and-tricks/map/battlement.png" alt="Battlement Main View" class="map-main-img">
+                    <h3 class="image-overlay-text minecraft-ten">Battlement</h3>
+                </div>
+                <div class="content-row">
+                    <p class="content-text minecraft-five"><strong>Overview:</strong> Battlement features secure walls and open pathways ideal for defensive play and explosive tactics[cite: 1].</p>
+                </div>
+            `,
+            "bestwalls": `
+                <div class="image-container">
+                    <img src="../../resources/image/articles/tips-and-tricks/map/bombardment.png" alt="Bombardment Main View" class="map-main-img">
+                    <h3 class="image-overlay-text minecraft-ten">Bombardment</h3>
+                </div>
+                <div class="content-row">
+                    <p class="content-text minecraft-five"><strong>Overview:</strong> The map consists of a layer of solid blocks on the bottom levels, followed by hidden TNT midway through the map[cite: 1].</p>
+                </div>
+            `,
+            "cauldron": `
+                <div class="image-container">
+                    <img src="../../resources/image/articles/tips-and-tricks/map/cauldron.png" alt="Cauldron Main View" class="map-main-img">
+                    <h3 class="image-overlay-text minecraft-ten">Cauldron</h3>
+                </div>
+                <div class="content-row">
+                    <p class="content-text minecraft-five"><strong>Overview:</strong> Dive into the depths of Cauldron where quick reflexes and careful positioning keep you out of danger[cite: 1].</p>
+                </div>
+            `,
+            "chessboard": `
+                <div class="image-container">
+                    <img src="../../resources/image/articles/tips-and-tricks/map/chessboard.png" alt="Chessboard Main View" class="map-main-img">
+                    <h3 class="image-overlay-text minecraft-ten">Chessboard</h3>
+                </div>
+                <div class="content-row">
+                    <p class="content-text minecraft-five"><strong>Overview:</strong> Chessboard requires tactical thinking, structured maneuvers, and precise explosive placement[cite: 1].</p>
+                </div>
+            `
+        };
+
+        function updateActiveMap(selectedItem) {
+            carouselItems.forEach(item => item.classList.remove('active'));
+            selectedItem.classList.add('active');
+
+            const mapKey = selectedItem.getAttribute('data-map');
+            if (mapData[mapKey]) {
+                contentDisplay.innerHTML = mapData[mapKey];
+            }
+
+            selectedItem.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }
+
+        carouselItems.forEach(item => {
+            item.addEventListener('click', () => {
+                updateActiveMap(item);
+            });
+        });
+
+        carouselContainer.addEventListener('scroll', () => {
+            const containerRect = carouselContainer.getBoundingClientRect();
+            const containerCenter = containerRect.left + containerRect.width / 2;
+
+            let closestItem = null;
+            let minDistance = Infinity;
+
+            carouselItems.forEach(item => {
+                const itemRect = item.getBoundingClientRect();
+                const itemCenter = itemRect.left + itemRect.width / 2;
+                const distance = Math.abs(containerCenter - itemCenter);
+
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestItem = item;
+                }
+            });
+
+            if (closestItem && !closestItem.classList.contains('active')) {
+                carouselItems.forEach(i => i.classList.remove('active'));
+                closestItem.classList.add('active');
+                const mapKey = closestItem.getAttribute('data-map');
+                if (mapData[mapKey]) {
+                    contentDisplay.innerHTML = mapData[mapKey];
+                }
+            }
+        });
     </script>
 </body>
 </html>
